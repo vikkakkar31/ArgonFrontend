@@ -1,0 +1,13 @@
+export { default as Game } from "./Game";
+export { default as GameBets } from "./GameBets";
+export { default as Login } from "./Login";
+export { default as Icons } from "./Icons";
+export { default as Maps } from "./Maps";
+export { default as PaymentRequest } from "./PaymentRequest";
+export { default as Profile } from "./Profile";
+export { default as Register } from "./Register";
+export { default as Result } from "./Result";
+export { default as Tables } from "./Tables";
+export { default as TransactionsHistory } from "./TransactionsHistory";
+export { default as Wallet } from "./Wallet";
+export { default as Users } from "./Users";

@@ -1,0 +1,4 @@
+export {
+    getGameBets
+  } from "./gameBets";
+  

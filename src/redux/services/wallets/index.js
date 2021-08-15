@@ -1,0 +1,4 @@
+export {
+    getWallets
+  } from "./wallets";
+  

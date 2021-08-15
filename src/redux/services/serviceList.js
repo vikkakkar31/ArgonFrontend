@@ -1,0 +1,33 @@
+const API = {
+  session: "/network/session",
+  network: "/network/get",
+  login: "/users/signin",
+  register: "/users/signup",
+  updateUser: "/users/updateprofile",
+  usersList: "/users/userslist",
+  usersFilteredList: "/users/usersFilteredList",
+  usersTransactionsList: "/subscription_transactions/usersTransactionsList",
+  forgotpassword: "/users/forgotpassword",
+  getJobSeekerQuestionsList:"/job_seekers_questions/getJobSeekerQuestionsList",
+  getQuestions: "/questions/getQuestions",
+  createQuestions: "/questions/createQuestion",
+  updateQuestion: "/questions/updateQuestion",
+  createSurvey: "/survey/createSurvey",
+  getOffers: "/offers/getOffers",
+  getOffersStatusCount: "/offers/getOffersCount_accStatus",
+  createOffer: "/offers/createOffer",
+  acceptOffer: "/offers/acceptOffer",
+  createShortlisted: "/shortList/createShortlisted",
+  getShortlisted: "/shortList/getShortlisted",
+  removeShortlisted: "/shortList/removeShortlisted",
+  getMessages: "/chat/getMessages",
+  addMessages: "/chat/addMessages",
+  getWallets: "/wallets/getWallets",
+  updateWallets: "/wallets/updateWallet/:id",
+  getTransactionHistory: "/transaction_history/getTransactionsHistory",
+  getGameBets: "/game_bets/getGameBets",
+  getGames: "/games/getGames",
+  addGame: "/games/createGame"
+};
+
+export default API;
