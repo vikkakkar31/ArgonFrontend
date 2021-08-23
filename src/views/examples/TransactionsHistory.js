@@ -40,6 +40,10 @@ const TransactionsHistory = (props) => {
   const dispatch = useDispatch();
   const [transactionHistorySet, setTransactionHistory] = useState([]);
 
+  const [filter, setFilter] = useState({
+    status: ''
+  });
+
   useEffect(() => {
 		dispatch({ type: 'LOADING_START' });
         dispatch(getTransactionHistory((errors, res) => {
@@ -47,6 +51,18 @@ const TransactionsHistory = (props) => {
 			  dispatch({ type: 'LOADING_SUCCESS' });
         }));
     }, []);
+
+    const handleFilterChange = (e) => {
+      e.preventDefault();
+      var filterS = {
+        status: e.currentTarget.getAttribute("dropdownvalue")
+      }
+      setFilter(prevState => ({
+          ...prevState,
+          filter: filterS
+      }));
+      console.log(filter.status, "STATUSSS");
+    };
 
   return (
     <>
@@ -58,16 +74,15 @@ const TransactionsHistory = (props) => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
-                <div>
                   <h3 className="text-white mb-0">Transaction History</h3>
-                  <UncontrolledDropdown size="sm" className="">
-                    <DropdownToggle caret>
-                      Dropdown
+                <div className="">
+                  <UncontrolledDropdown size="sm" className="float-right">
+                    <DropdownToggle caret className="">
+                      {filter.status ? filter.status : "Status"}
                     </DropdownToggle>
-                    <DropdownMenu right>
-                      <DropdownItem>Foo Action</DropdownItem>
-                      <DropdownItem>Bar Action</DropdownItem>
-                      <DropdownItem>Quo Action</DropdownItem>
+                    <DropdownMenu right id="status">
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="Active">Active</DropdownItem>
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="Inactive">Inactive</DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 </div>        

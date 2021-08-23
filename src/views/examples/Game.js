@@ -22,7 +22,6 @@ import { Link, withRouter, useHistory } from "react-router-dom";
 import {
   Card,
   CardHeader,
-  Media,
   Table,
   Container,
   Row,
@@ -34,9 +33,7 @@ import {
   InputGroupAddon,
   InputGroupText,
   InputGroup,
-  Col,
   UncontrolledDropdown,
-  Dropdown,
   DropdownToggle, 
   DropdownMenu, 
   DropdownItem
@@ -54,6 +51,11 @@ const Game = (props) => {
     end_date: Date.now(),
     submitted: false,
   });
+  const [filter, setFilter] = useState({
+    status: ''
+  });
+
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
 		dispatch({ type: 'LOADING_START' });
@@ -61,6 +63,28 @@ const Game = (props) => {
 			  dispatch({ type: 'LOADING_SUCCESS' });
         }));
     }, []);
+
+    const getSearchGame = (e) => {
+      e.preventDefault();
+      setSearchText(e.target.value);
+      // let user = shortListedUser.filter(user => {
+      //     let userName = user.shortlistedUser.first_name + user.shortlistedUser.last_name;
+      //     return userName.indexOf(e.target.value) > 0;
+      // });
+      // setSearchedShortListedUser(user);
+    };
+
+    const handleFilterChange = (e) => {
+      e.preventDefault();
+      var filterS = {
+        status: e.currentTarget.getAttribute("dropdownvalue")
+      }
+      setFilter(prevState => ({
+          ...prevState,
+          filter: filterS
+      }));
+      console.log(filter.status, "STATUSSS");
+    };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -202,7 +226,30 @@ const Game = (props) => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
-                <h3 className="text-white mb-0">Games List</h3>
+                  <h3 className="text-white mb-0">Games List</h3>
+                  <div className="d-flex mt-2">
+                  <InputGroup size="sm" className="w-50">
+                    <Input
+                      type="text"
+                      name=""
+                      value={searchText || ""}
+                      onChange={getSearchGame}
+                      placeholder="Search....."
+                    />
+                    <InputGroupAddon addonType="append">
+                      <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
+                    </InputGroupAddon>
+                  </InputGroup>    
+                  <UncontrolledDropdown size="sm" className="w-50">
+                    <DropdownToggle caret className="float-right">
+                      {filter.status ? filter.status : "Status"}
+                    </DropdownToggle>
+                    <DropdownMenu right id="status">
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="Active">Active</DropdownItem>
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="Inactive">Inactive</DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </div>
               </CardHeader>
               <Table
                 className="align-items-center table-dark table-flush"
