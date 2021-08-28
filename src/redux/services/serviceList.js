@@ -27,7 +27,8 @@ const API = {
   getTransactionHistory: "/transaction_history/getTransactionsHistory",
   getGameBets: "/game_bets/getGameBets",
   getGames: "/games/getGames",
-  addGame: "/games/createGame"
+  addGame: "/games/createGame",
+  getGamesBets: "/game_bets/getGameBets",
 };
 
 export default API;

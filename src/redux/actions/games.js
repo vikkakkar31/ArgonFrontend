@@ -3,6 +3,9 @@ import {
     GET_GAMES_START,
     GET_GAMES_SUCCESS,
     GET_GAMES_FAILURE,
+    GET_GAMES_BETS_START,
+    GET_GAMES_BETS_SUCCESS,
+    GET_GAMES_BETS_FAILURE,
     ADD_GAMES_START,
     ADD_GAMES_SUCCESS,
     ADD_GAMES_FAILURE
@@ -14,15 +17,16 @@ import dispatchActionToReducer, {
 
 import {
     getGames as getGamesService,
-    addGame as addGameService
+    addGame as addGameService,
+    getGamesBets as getGamesBetsService
 } from "../services";
 
 export const getGames = (query, callback) => {
     return dispatchActionToReducer(
         getGamesService(query),
-            GET_GAMES_START,
-            GET_GAMES_SUCCESS,
-            GET_GAMES_FAILURE,
+        GET_GAMES_START,
+        GET_GAMES_SUCCESS,
+        GET_GAMES_FAILURE,
         (error, res) => {
             if (error) return;
             else if (res !== undefined) {
@@ -43,10 +47,26 @@ export function addGame(body, callback) {
         (error, res) => {
             if (error) return;
             else if (res !== undefined) {
-              if (callback) callback(error, res);
+                if (callback) callback(error, res);
             } else {
-              console.log("undefined response");
+                console.log("undefined response");
             }
-          }
+        }
     );
-  }
+}
+export const getGamesBets = (query, callback) => {
+    return dispatchActionToReducer(
+        getGamesBetsService(query),
+        GET_GAMES_BETS_START,
+        GET_GAMES_BETS_SUCCESS,
+        GET_GAMES_BETS_FAILURE,
+        (error, res) => {
+            if (error) return;
+            else if (res !== undefined) {
+                if (callback) callback(null, res);
+            } else {
+                console.log("undefined response");
+            }
+        }
+    );
+};
