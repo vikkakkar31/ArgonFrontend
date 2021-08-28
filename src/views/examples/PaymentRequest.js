@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
+import React, { useState } from "react";
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
 
@@ -39,6 +39,22 @@ import { getTransactionHistory } from "../../redux/actions";
 const PaymentRequest = (props) => {
   const { transactionHistory } = props.transactionHistory;
   const dispatch = useDispatch();
+  const [filter, setFilter] = useState({
+    status: ''
+  });
+
+  const handleFilterChange = (e) => {
+    e.preventDefault();
+    var filterS = {
+      status: e.currentTarget.getAttribute("dropdownvalue")
+    }
+    setFilter(prevState => ({
+        ...prevState,
+        filter: filterS
+    }));
+    console.log(filter.status, "STATUSSS");
+  };
+
   return (
     <>
       <Header />
@@ -49,7 +65,18 @@ const PaymentRequest = (props) => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
-                <h3 className="text-white mb-0">Payments</h3>
+                  <h3 className="text-white mb-0">Payments</h3>
+                <div className="">
+                  <UncontrolledDropdown size="sm" className="float-right">
+                    <DropdownToggle caret className="">
+                      {filter.status ? filter.status : "Status"}
+                    </DropdownToggle>
+                    <DropdownMenu right id="status">
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="Active">Active</DropdownItem>
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="Inactive">Inactive</DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </div>
               </CardHeader>
               <Table
                 className="align-items-center table-dark table-flush"

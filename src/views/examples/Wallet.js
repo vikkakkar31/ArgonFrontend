@@ -66,7 +66,7 @@ const Wallet = (props) => {
           filter: filterS
       }));
       console.log(filter.status, "STATUSSS");
-  };
+    };
 
   /**
    *
@@ -145,10 +145,10 @@ const Wallet = (props) => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
-                <div>
                   <h3 className="text-white mb-0">Wallet Details</h3>
-                  <UncontrolledDropdown size="sm" className="">
-                    <DropdownToggle caret>
+                <div className="">
+                  <UncontrolledDropdown size="sm" className="float-right">
+                    <DropdownToggle caret className="">
                       {filter.status ? filter.status : "Status"}
                     </DropdownToggle>
                     <DropdownMenu right id="status">
