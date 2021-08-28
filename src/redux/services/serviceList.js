@@ -8,7 +8,7 @@ const API = {
   usersFilteredList: "/users/usersFilteredList",
   usersTransactionsList: "/subscription_transactions/usersTransactionsList",
   forgotpassword: "/users/forgotpassword",
-  getJobSeekerQuestionsList:"/job_seekers_questions/getJobSeekerQuestionsList",
+  getJobSeekerQuestionsList: "/job_seekers_questions/getJobSeekerQuestionsList",
   getQuestions: "/questions/getQuestions",
   createQuestions: "/questions/createQuestion",
   updateQuestion: "/questions/updateQuestion",
@@ -24,11 +24,13 @@ const API = {
   addMessages: "/chat/addMessages",
   getWallets: "/wallets/getWallets",
   updateWallets: "/wallets/updateWallet/:id",
-  getTransactionHistory: "/transaction_history/getTransactionsHistory",
+  getTransactionHistory: "/transaction/getTransactionsHistory",
   getGameBets: "/game_bets/getGameBets",
   getGames: "/games/getGames",
   addGame: "/games/createGame",
   getGamesBets: "/game_bets/getGameBets",
+  getUserRequest: "/transaction/getPendingRequest",
+  approveRequest: "/transaction/approveRequest"
 };
 
 export default API;

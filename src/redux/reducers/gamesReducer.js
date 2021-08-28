@@ -16,9 +16,9 @@ const INITIAL_STATE = {
 export default function (state = INITIAL_STATE, action) {
     switch (action.type) {
         case GET_GAMES_SUCCESS:
-            return { ...state, gamesList: [...action.data.response] };
+            return { ...state, gamesList: [...action.data] };
         case GET_GAMES_BETS_SUCCESS:
-            return { ...state, gameBets: [...action.data.response] };
+            return { ...state, gameBets: [...action.data] };
         default:
             return state;
     }

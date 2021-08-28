@@ -1,4 +1,6 @@
 export {
-    getTransactionHistory
+    getTransactionHistory,
+    getUserRequest,
+    updateUserRequest
   } from "./transactionHistory";
   

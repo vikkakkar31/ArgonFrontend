@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { useEffect, useState }  from "react";
+import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
 // reactstrap components
@@ -28,12 +28,12 @@ import {
   UncontrolledDropdown,
   Dropdown,
   DropdownToggle,
-  DropdownMenu, 
+  DropdownMenu,
   DropdownItem
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import { getTransactionHistory } from "../../redux/actions"; 
+import { getTransactionHistory } from "../../redux/actions";
 
 const TransactionsHistory = (props) => {
   const { transactionHistory } = props.transactionHistory;
@@ -41,29 +41,39 @@ const TransactionsHistory = (props) => {
   const [transactionHistorySet, setTransactionHistory] = useState([]);
 
   const [filter, setFilter] = useState({
-    status: ''
+    filterS: {
+      status: 'debit'
+    }
   });
 
   useEffect(() => {
-		dispatch({ type: 'LOADING_START' });
-        dispatch(getTransactionHistory((errors, res) => {
-            setTransactionHistory(res.response); 
-			  dispatch({ type: 'LOADING_SUCCESS' });
-        }));
-    }, []);
+    getUserData();
+  }, []);
 
-    const handleFilterChange = (e) => {
-      e.preventDefault();
-      var filterS = {
-        status: e.currentTarget.getAttribute("dropdownvalue")
-      }
-      setFilter(prevState => ({
-          ...prevState,
-          filter: filterS
-      }));
-      console.log(filter.status, "STATUSSS");
-    };
-
+  const handleFilterChange = (e) => {
+    e.preventDefault();
+    var filterS = {
+      status: e.currentTarget.getAttribute("dropdownvalue")
+    }
+    setFilter(prevState => ({
+      ...prevState,
+      filterS: { ...filterS }
+    }));
+    getUserData({
+      transaction_type: e.currentTarget.getAttribute("dropdownvalue")
+    })
+  };
+  const getUserData = (query = {}) => {
+    dispatch({ type: 'LOADING_START' });
+    dispatch(getTransactionHistory(query, (errors, res) => {
+      setTransactionHistory(res.response);
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+  }
+  const status = {
+    debit: "Debit",
+    credit: "Credit"
+  }
   return (
     <>
       <Header />
@@ -74,18 +84,18 @@ const TransactionsHistory = (props) => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
-                  <h3 className="text-white mb-0">Transaction History</h3>
+                <h3 className="text-white mb-0">Transaction History</h3>
                 <div className="">
                   <UncontrolledDropdown size="sm" className="float-right">
                     <DropdownToggle caret className="">
-                      {filter.status ? filter.status : "Status"}
+                      {filter.filterS && filter.filterS.status ? status[filter.filterS.status] : "Status"}
                     </DropdownToggle>
                     <DropdownMenu right id="status">
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Active">Active</DropdownItem>
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Inactive">Inactive</DropdownItem>
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="debit">Debit</DropdownItem>
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="credit">Credit</DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
-                </div>        
+                </div>
               </CardHeader>
               <Table
                 className="align-items-center table-dark table-flush"
@@ -94,9 +104,7 @@ const TransactionsHistory = (props) => {
                 <thead className="thead-dark">
                   <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Register Number</th>
                     <th scope="col">Payment Method</th>
-                    <th scope="col">Transfer Number</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Payment Type</th>
                     <th scope="col">Date</th>
@@ -104,21 +112,19 @@ const TransactionsHistory = (props) => {
                   </tr>
                 </thead>
                 <tbody>
-                {transactionHistory && transactionHistory.length ?
-                  transactionHistory.map((list, index) => {
-                    return(
-                    <tr>
-                      <td>{list.wallet_id}</td>
-                      <td>{list.register_number}</td>
-                      <td>{list.transaction_mode}</td>
-                      <td>{list.transfer_number}</td>
-                      <td>{list.amount}</td>
-                      <td>{list.transaction_type}</td>   
-                      <td>{list.updatedAt}</td>
-                    </tr>
-                    )
-                  }) : ''
-                }
+                  {transactionHistory && transactionHistory.length ?
+                    transactionHistory.map((list, index) => {
+                      return (
+                        <tr key={index}>
+                          <td>{list.wallet_id.phone_number}</td>
+                          <td>{list.transaction_mode}</td>
+                          <td>{list.amount}</td>
+                          <td>{list.transaction_type}</td>
+                          <td>{list.updatedAt}</td>
+                        </tr>
+                      )
+                    }) : ''
+                  }
                 </tbody>
               </Table>
             </Card>
@@ -133,7 +139,7 @@ function mapStateToProps(state) {
   return {
     user: state.session.user,
     transactionHistory: state.transactionHistory
-	};
+  };
 }
 
 export default withRouter(connect(mapStateToProps, {})(TransactionsHistory));

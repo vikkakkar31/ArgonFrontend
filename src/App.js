@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import { withRouter, Switch, Route, Redirect } from 'react-router-dom';
 import AdminLayout from "layouts/Admin.js";
 import AuthLayout from "layouts/Auth.js";
-// import ReduxToastr from 'react-redux-toastr';
+import ReduxToastr from 'react-redux-toastr';
+import 'react-redux-toastr/lib/css/react-redux-toastr.min.css'
 class App extends Component {
   constructor(props) {
     super(props);
@@ -18,12 +19,12 @@ class App extends Component {
     const { authenticated, checked, user ,location : {pathname} } = this.props;
     return (
       <React.Fragment>
-         {/* <ReduxToastr
+         <ReduxToastr
           timeOut={4000}
           transitionIn="fadeIn"
           transitionOut="fadeOut"
           progressBar
-           /> */}
+           />
         {/* <PageLoader isLoaded={this.props.isLoaded} /> */}
         <Switch>
           {authenticated && checked && 

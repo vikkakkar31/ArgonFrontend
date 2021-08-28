@@ -45,7 +45,38 @@ const GameBets = (props) => {
 
     useEffect(() => {
         dispatch({ type: 'LOADING_START' });
-        dispatch(getGamesBets((errors, res) => {
+        dispatch(getGamesBets({}, (errors, res) => {
+            console.log(res, "ressasd");
+            let userData = []
+            var values = _.cloneDeep(inputValues);
+            var inside_bets = _.cloneDeep(andarValues);
+            var outside_bets = _.cloneDeep(baharValues);
+            res.data.forEach(element => {
+                element.bets.forEach((bets) => {
+                    let targetNUmber = bets.bet_number
+                    bets.user_bet.forEach((userBet) => {
+                        values[targetNUmber] = values[targetNUmber] ? values[targetNUmber] + userBet.bet_amount : userBet.bet_amount;
+                    })
+
+                })
+                element.inside_bets.forEach((bets) => {
+                    let targetNUmber = bets.bet_number
+                    bets.user_bet.forEach((userBet) => {
+                        inside_bets[`andar_${targetNUmber}`] = values[targetNUmber] ? values[targetNUmber] + userBet.bet_amount : userBet.bet_amount;
+                    })
+
+                })
+                element.outside_bets.forEach((bets) => {
+                    let targetNUmber = bets.bet_number
+                    bets.user_bet.forEach((userBet) => {
+                        outside_bets[`bahar_${targetNUmber}`] = values[targetNUmber] ? values[targetNUmber] + userBet.bet_amount : userBet.bet_amount;
+                    })
+
+                })
+            });
+            setInputValues(values);
+            setAndarValues(inside_bets);
+            setBaharValues(outside_bets);
             dispatch({ type: 'LOADING_SUCCESS' });
         }));
     }, []);
@@ -75,7 +106,7 @@ const GameBets = (props) => {
         setTotalBahar(total);
         setBaharValues(values);
     };
-    console.log(gameBets, "gameBets",inputValues);
+    console.log(gameBets, "gameBets", inputValues, andarValues);
 
     //calculate sum for main table vertical rows
     const calculateSumValues = () => {

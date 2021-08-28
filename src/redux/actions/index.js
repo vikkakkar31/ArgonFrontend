@@ -17,7 +17,9 @@ export {
 
 export {
   getTransactionHistory,
-  setTransactionHistory
+  setTransactionHistory,
+  getUserRequest,
+  updateUserRequest
 } from "./transactionHistory";
 
 export {

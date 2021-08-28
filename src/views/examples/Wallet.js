@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { useEffect, useState }  from "react";
+import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
 // reactstrap components
@@ -27,13 +27,13 @@ import {
   Row,
   UncontrolledDropdown,
   Dropdown,
-  DropdownToggle, 
-  DropdownMenu, 
+  DropdownToggle,
+  DropdownMenu,
   DropdownItem
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import { getWallets, updateWallet } from "../../redux/actions"; 
+import { getWallets, updateWallet } from "../../redux/actions";
 
 const Wallet = (props) => {
   const { walletsList } = props.wallets;
@@ -50,35 +50,35 @@ const Wallet = (props) => {
   const [totalAmount, setTotalAmount] = useState(null);
 
   useEffect(() => {
-		dispatch({ type: 'LOADING_START' });
-        dispatch(getWallets((errors, res) => {
-			  dispatch({ type: 'LOADING_SUCCESS' });
-        }));
-    }, []);  
+    dispatch({ type: 'LOADING_START' });
+    dispatch(getWallets({}, (errors, res) => {
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+  }, []);
 
-    const handleFilterChange = (e) => {
-      e.preventDefault();
-      var filterS = {
-        status: e.currentTarget.getAttribute("dropdownvalue")
-      }
-      setFilter(prevState => ({
-          ...prevState,
-          filter: filterS
-      }));
-      console.log(filter.status, "STATUSSS");
-    };
+  const handleFilterChange = (e) => {
+    e.preventDefault();
+    var filterS = {
+      status: e.currentTarget.getAttribute("dropdownvalue")
+    }
+    setFilter(prevState => ({
+      ...prevState,
+      filter: filterS
+    }));
+    console.log(filter.status, "STATUSSS");
+  };
 
   /**
    *
    * @param id - The id of the wallet
    * @param currentTotalAmount - The current total amount of the wallet
    */
-  const onEdit = ({id, currentTotalAmount}) => {
-      setInEditMode({
-          status: true,
-          rowKey: id
-      })
-      setTotalAmount(currentTotalAmount);
+  const onEdit = ({ id, currentTotalAmount }) => {
+    setInEditMode({
+      status: true,
+      rowKey: id
+    })
+    setTotalAmount(currentTotalAmount);
   }
 
   /**
@@ -86,35 +86,35 @@ const Wallet = (props) => {
      * @param id
      * @param newTotalAmount
      */
-    const updateWallet = ({id, newTotalAmount}) => {
+  const updateWallet = ({ id, newTotalAmount }) => {
 
-      // dispatch(updateProfile(newValue, (err, res) => {
-      //   res.then()
-      //   .then(err=>{
-      //     onCancel();
-      //     dispatch(getWallets((errors, res) => {
-      //       dispatch({ type: 'LOADING_SUCCESS' });
-      //       })
-      //     )
-      //   })
-      // }));
-      // fetch(`${INVENTORY_API_URL}/${id}`, {
-      //     method: "PATCH",
-      //     body: JSON.stringify({
-      //         total_amount: newTotalAmount
-      //     }),
-      //     headers: {
-      //         "Content-type": "application/json; charset=UTF-8"
-      //     }
-      // })
-      //     .then(response => response.json())
-      //     .then(json => {
-      //         // reset inEditMode and total amount values
-      //         onCancel();
+    // dispatch(updateProfile(newValue, (err, res) => {
+    //   res.then()
+    //   .then(err=>{
+    //     onCancel();
+    //     dispatch(getWallets((errors, res) => {
+    //       dispatch({ type: 'LOADING_SUCCESS' });
+    //       })
+    //     )
+    //   })
+    // }));
+    // fetch(`${INVENTORY_API_URL}/${id}`, {
+    //     method: "PATCH",
+    //     body: JSON.stringify({
+    //         total_amount: newTotalAmount
+    //     }),
+    //     headers: {
+    //         "Content-type": "application/json; charset=UTF-8"
+    //     }
+    // })
+    //     .then(response => response.json())
+    //     .then(json => {
+    //         // reset inEditMode and total amount values
+    //         onCancel();
 
-      //         // fetch the updated data
-      //         getWallets();
-      //     })
+    //         // fetch the updated data
+    //         getWallets();
+    //     })
   }
 
   /**
@@ -122,19 +122,20 @@ const Wallet = (props) => {
      * @param id -The id of the wallet
      * @param newTotalAmount - The new total amount of the wallet
      */
-    const onSave = ({id, newTotalAmount}) => {
-      updateWallet({id, newTotalAmount});
+  const onSave = ({ id, newTotalAmount }) => {
+    updateWallet({ id, newTotalAmount });
   }
 
   const onCancel = () => {
-      // reset the inEditMode state value
-      setInEditMode({
-          status: false,
-          rowKey: null
-      })
-      // reset the total amount value
-      setTotalAmount(null);
+    // reset the inEditMode state value
+    setInEditMode({
+      status: false,
+      rowKey: null
+    })
+    // reset the total amount value
+    setTotalAmount(null);
   }
+  console.log(walletsList, "walletsList");
   return (
     <>
       <Header />
@@ -145,7 +146,7 @@ const Wallet = (props) => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
-                  <h3 className="text-white mb-0">Wallet Details</h3>
+                <h3 className="text-white mb-0">Wallet Details</h3>
                 <div className="">
                   <UncontrolledDropdown size="sm" className="float-right">
                     <DropdownToggle caret className="">
@@ -156,7 +157,7 @@ const Wallet = (props) => {
                       <DropdownItem onClick={handleFilterChange} dropDownValue="Inactive">Inactive</DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
-                </div>                
+                </div>
               </CardHeader>
               <Table
                 className="align-items-center table-dark table-flush"
@@ -173,47 +174,47 @@ const Wallet = (props) => {
                   </tr>
                 </thead>
                 <tbody>
-                {walletsList && walletsList.length ?
-                  walletsList.map((list, index) => {
-                    return(
-                    <tr>
-                      <td>{list.user_id}</td>
-                      <td>{list.phone_number}</td>
-                      <td>{list.total_amount}</td>
-                      <td>{list.status}</td>
-                      <td>
-                      {
-                        inEditMode.status && inEditMode.rowKey === list.id ? (
-                            <React.Fragment>
-                                <button
+                  {walletsList && walletsList.length ?
+                    walletsList.map((list, index) => {
+                      return (
+                        <tr key={index}>
+                          <td>{list?.user_id?.first_name + list?.user_id?.last_name}</td>
+                          <td>{list.phone_number}</td>
+                          <td>{list.total_amount}</td>
+                          <td>{list.status}</td>
+                          <td>
+                            {
+                              inEditMode.status && inEditMode.rowKey === list.id ? (
+                                <React.Fragment>
+                                  <button
                                     className={"btn-success"}
-                                    onClick={() => onSave({id: list.id, newTotalAmount: totalAmount})}
-                                >
+                                    onClick={() => onSave({ id: list.id, newTotalAmount: totalAmount })}
+                                  >
                                     Save
-                                </button>
+                                  </button>
 
-                                <button
+                                  <button
                                     className={"btn-secondary"}
-                                    style={{marginLeft: 8}}
+                                    style={{ marginLeft: 8 }}
                                     onClick={() => onCancel()}
-                                >
+                                  >
                                     Cancel
+                                  </button>
+                                </React.Fragment>
+                              ) : (
+                                <button
+                                  className={"btn-primary"}
+                                  onClick={() => onEdit({ id: list.id, currentTotalAmount: list.total_amount })}
+                                >
+                                  Edit
                                 </button>
-                            </React.Fragment>
-                        ) : (
-                            <button
-                                className={"btn-primary"}
-                                onClick={() => onEdit({id: list.id, currentTotalAmount: list.total_amount})}
-                            >
-                                Edit
-                            </button>
-                        )
-                    }
-                      </td>
-                    </tr>
-                    )
-                  }) : ''
-                }
+                              )
+                            }
+                          </td>
+                        </tr>
+                      )
+                    }) : ''
+                  }
                 </tbody>
               </Table>
             </Card>
@@ -228,7 +229,7 @@ function mapStateToProps(state) {
   return {
     user: state.session.user,
     wallets: state.wallets
-	};
+  };
 }
 
 export default withRouter(connect(mapStateToProps, {})(Wallet));

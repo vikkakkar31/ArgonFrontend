@@ -15,9 +15,11 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
+import { getUserRequest, updateUserRequest } from "../../redux/actions";
+import { toastr } from 'react-redux-toastr'
 
 // reactstrap components
 import {
@@ -27,21 +29,33 @@ import {
   Container,
   Row,
   UncontrolledDropdown,
-  Dropdown,
-  DropdownToggle, 
-  DropdownMenu, 
-  DropdownItem
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Input,
+  FormGroup,
+  Col,
+  Label
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import { getTransactionHistory } from "../../redux/actions"; 
+import { getTransactionHistory } from "../../redux/actions";
 
 const PaymentRequest = (props) => {
-  const { transactionHistory } = props.transactionHistory;
+  // console.log(props, "props");
+  const { transactionHistory, userRequests } = props.transactionHistory;
+  // console.log(userRequests, "transactionHistory");
   const dispatch = useDispatch();
+  const [userData, setUserData] = useState(userRequests);
   const [filter, setFilter] = useState({
-    status: ''
+    filterS: {
+      status: 'debit'
+    }
   });
+
+  useEffect(() => {
+    getUserData();
+  }, []);
 
   const handleFilterChange = (e) => {
     e.preventDefault();
@@ -49,12 +63,41 @@ const PaymentRequest = (props) => {
       status: e.currentTarget.getAttribute("dropdownvalue")
     }
     setFilter(prevState => ({
-        ...prevState,
-        filter: filterS
+      ...prevState,
+      filterS: { ...filterS }
     }));
-    console.log(filter.status, "STATUSSS");
+    getUserData({
+      transaction_type: e.currentTarget.getAttribute("dropdownvalue")
+    })
   };
+  const onUpdate = (transaction, status) => {
+    let updatData = {
+      "transaction_id": transaction._id,
+      "transaction_status": status,
+      "role": "admin"
+    }
+    dispatch(updateUserRequest(updatData, (err, res) => {
+      if (res.data.message) {
+        toastr.success('error', res.data.message)
+      } else {
+        toastr.success('Success', 'Request Updated Successfully')
+      }
+      getUserData();
+    }));
+  }
+  const getUserData = (query = {}) => {
+    dispatch({ type: 'LOADING_START' });
+    dispatch(getUserRequest(query, (errors, res) => {
+      setUserData(res.data);
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+  }
+  console.log(filter, "STATUSSS");
+  const status = {
+    debit: "Debit",
+    credit: "Credit"
 
+  }
   return (
     <>
       <Header />
@@ -65,17 +108,22 @@ const PaymentRequest = (props) => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
-                  <h3 className="text-white mb-0">Payments</h3>
+                <h3 className="text-white mb-0">Payments</h3>
                 <div className="">
                   <UncontrolledDropdown size="sm" className="float-right">
                     <DropdownToggle caret className="">
-                      {filter.status ? filter.status : "Status"}
+                      {filter.filterS && filter.filterS.status ? status[filter.filterS.status] : "Status"}
                     </DropdownToggle>
                     <DropdownMenu right id="status">
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Active">Active</DropdownItem>
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Inactive">Inactive</DropdownItem>
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="debit">Debit</DropdownItem>
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="credit">Credit</DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
+                  <FormGroup row>
+                    <Col sm={4}>
+                      <Input type="text" placeholder="with a placeholder" />
+                    </Col>
+                  </FormGroup>
                 </div>
               </CardHeader>
               <Table
@@ -85,9 +133,7 @@ const PaymentRequest = (props) => {
                 <thead className="thead-dark">
                   <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Register Number</th>
                     <th scope="col">Payment Method</th>
-                    <th scope="col">Transfer Number</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Payment Type</th>
                     <th scope="col">Date</th>
@@ -95,23 +141,39 @@ const PaymentRequest = (props) => {
                   </tr>
                 </thead>
                 <tbody>
-                {transactionHistory && transactionHistory.length ?
-                  transactionHistory.map((list, index) => {
-                    return(
-                    <tr>
-                    <th scope="row">
-                      <span className="mb-0 text-sm">Argon Design System</span>
-                    </th>
-                    <td>{list.register_number}</td>
-                    <td>{list.transaction_mode}</td>
-                    <td>{list.transfer_number}</td>
-                    <td>{list.amount}</td>
-                    <td>{list.transaction_type}</td>   
-                    <td>{list.updatedAt}</td>
-                    </tr>
-                    )
-                  }) : ''
-                }
+                  {userData && userData.length ?
+                    userData.map((list, index) => {
+                      return (
+                        <tr key={index}>
+                          <th scope="row">
+                            <span className="mb-0 text-sm">{list.wallet_id.phone_number}</span>
+                          </th>
+                          <td>{list.transaction_mode}</td>
+                          <td>{list.amount}</td>
+                          <td>{list.transaction_type}</td>
+                          <td>{list.updatedAt}</td>
+                          <td>
+                            <React.Fragment>
+                              <button
+                                className={"btn-success"}
+                                onClick={() => onUpdate(list, 'approved')}
+                              >
+                                Approve
+                              </button>
+
+                              <button
+                                className={"btn-secondary"}
+                                style={{ marginLeft: 8 }}
+                                onClick={() => onUpdate(list, 'rejected')}
+                              >
+                                Reject
+                              </button>
+                            </React.Fragment>
+                          </td>
+                        </tr>
+                      )
+                    }) : ''
+                  }
                 </tbody>
               </Table>
             </Card>
@@ -126,7 +188,7 @@ function mapStateToProps(state) {
   return {
     user: state.session.user,
     transactionHistory: state.transactionHistory
-	};
+  };
 }
 
 export default withRouter(connect(mapStateToProps, {})(PaymentRequest));

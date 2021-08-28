@@ -9,3 +9,17 @@ export function getTransactionHistory(queryParm) {
         url: `${API.getTransactionHistory}${query}`,
     });
 }
+export function getUserRequest(queryParm) {
+    let query = createQueryParams(queryParm);
+    return apiCall({
+        method: "GET",
+        url: `${API.getUserRequest}${query}`,
+    });
+}
+export function updateUserRequest(userData) {
+    return apiCall({
+        method: "PUT",
+        url: `${API.approveRequest}`,
+        data: userData
+    });
+}

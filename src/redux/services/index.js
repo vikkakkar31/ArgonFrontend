@@ -15,7 +15,9 @@ export {
 } from "./wallets";
 
 export {
-  getTransactionHistory
+  getTransactionHistory,
+  getUserRequest,
+  updateUserRequest
 } from "./transactionHistory";
 
 export {
