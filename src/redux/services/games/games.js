@@ -23,3 +23,10 @@ export function addGame(reqData) {
     data: reqData
   });
 }
+export function updateGameResults(reqData) {
+  return apiNoTokenCall({
+    method: "POST",
+    url: `${API.updateGameResults}`,
+    data: reqData
+  });
+}

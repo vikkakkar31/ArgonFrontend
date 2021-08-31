@@ -20,6 +20,7 @@ import {
   Users,
   Game,
   GameBets,
+  GameResults,
   Result,
   Wallet,
   Profile,
@@ -62,10 +63,10 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/result",
+    path: "/gameResults",
     name: "Result",
     icon: "ni ni-pin-3 text-indigo",
-    component: Result,
+    component: GameResults,
     layout: "/admin",
   },
   {

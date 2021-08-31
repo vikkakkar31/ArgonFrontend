@@ -11,3 +11,4 @@ export { default as Tables } from "./Tables";
 export { default as TransactionsHistory } from "./TransactionsHistory";
 export { default as Wallet } from "./Wallet";
 export { default as Users } from "./Users";
+export { default as GameResults } from "./GameResults";
