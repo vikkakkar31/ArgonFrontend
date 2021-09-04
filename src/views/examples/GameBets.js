@@ -48,8 +48,12 @@ const GameBets = (props) => {
     const { gameBets, gamesList } = props.games;
     const dispatch = useDispatch();
     const [filter, setFilter] = useState({
-        status: '',
-        start_date: Date.now(),
+        filterS: {
+            game_id: "",
+            user_id: "",
+            amount: "",
+            createdDate: "",
+        },
     });
     const [hrows, setHRowsCount] = useState(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]);
     const [vrows, setVRowsCount] = useState(["01", "11", "21", "31", "41", "51", "61", "71", "81", "91"]);
@@ -68,47 +72,63 @@ const GameBets = (props) => {
         }));
         dispatch(getUserList((errors, res) => {
         }));
-        dispatch(getGamesBets({}, (errors, res) => {
-            console.log(res, "ressasd");
-            let userData = []
+        getGameBetsData();
+    }, []);
+
+    const getGameBetsData = (query = {}) => {
+        dispatch(getGamesBets(query, (errors, res) => {
             var values = _.cloneDeep(inputValues);
-            var resultValues = _.cloneDeep(resultValues);
             var inside_bets = _.cloneDeep(andarValues);
             var outside_bets = _.cloneDeep(baharValues);
-            res.data.forEach(element => {
-                if (element.bets.length) {
-                    element.bets.forEach((bets) => {
-                        let targetNUmber = bets.bet_number;
-                        for (let item of vrows) {
-                            let sum = 0;
-                            for (let sitem of hrows) {
-                                let currentNUmber = Number(item) + Number(sitem) - 1;
-                                if (currentNUmber === targetNUmber) {
-                                    values[`${sitem}_${item}`] = values[`${sitem}_${item}`] ? values[`${sitem}_${item}`] + bets.bet_amount : bets.bet_amount;
+            console.log(res.data.length, "ressasd");
+            if (res.data.length) {
+                res.data.forEach(element => {
+                    if (element.bets.length) {
+                        element.bets.forEach((bets) => {
+                            let targetNUmber = bets.bet_number;
+                            for (let item of vrows) {
+                                let sum = 0;
+                                for (let sitem of hrows) {
+                                    let currentNUmber = Number(item) + Number(sitem) - 1;
+                                    if (currentNUmber === targetNUmber) {
+                                        values[`${sitem}_${item}`] = values[`${sitem}_${item}`] ? values[`${sitem}_${item}`] + bets.bet_amount : bets.bet_amount;
+                                    }
                                 }
                             }
-                        }
-                    })
-                }
-                if (element.inside_bets.length) {
-                    element.inside_bets.forEach((bets) => {
-                        let targetNUmber = bets.bet_number;
-                        inside_bets[`andar_${targetNUmber}`] = !isNaN(values[targetNUmber]) ? values[targetNUmber] + bets.bet_amount : bets.bet_amount;
-                    })
-                }
-                if (element.outside_bets.length) {
-                    element.outside_bets.forEach((bets) => {
-                        let targetNUmber = bets.bet_number;
-                        outside_bets[`bahar_${targetNUmber}`] = !isNaN(values[targetNUmber]) ? values[targetNUmber] + bets.bet_amount : bets.bet_amount;
-                    })
-                }
-            });
-            setInputValues(values);
-            setAndarValues(inside_bets);
-            setBaharValues(outside_bets);
+                        })
+                    } else {
+                        values = {}
+                    }
+                    if (element.inside_bets.length) {
+                        element.inside_bets.forEach((bets) => {
+                            let targetNUmber = bets.bet_number;
+                            inside_bets[`andar_${targetNUmber}`] = !isNaN(values[targetNUmber]) ? values[targetNUmber] + bets.bet_amount : bets.bet_amount;
+                        })
+                    } else {
+                        inside_bets = {}
+                    }
+                    if (element.outside_bets.length) {
+                        element.outside_bets.forEach((bets) => {
+                            let targetNUmber = bets.bet_number;
+                            outside_bets[`bahar_${targetNUmber}`] = !isNaN(values[targetNUmber]) ? values[targetNUmber] + bets.bet_amount : bets.bet_amount;
+                        })
+                    } else {
+                        outside_bets = {}
+                    }
+                });
+                setInputValues(values);
+                setAndarValues(inside_bets);
+                setBaharValues(outside_bets);
+            } else {
+                setInputValues({});
+                setAndarValues({});
+                setBaharValues({});
+            }
+
             dispatch({ type: 'LOADING_SUCCESS' });
         }));
-    }, []);
+    }
+    console.log(inputValues,andarValues,baharValues,"hi here");
     useEffect(() => {
         calculateSumValues();
     }, [inputValues, andarValues, baharValues]);
@@ -147,7 +167,6 @@ const GameBets = (props) => {
             values["result_" + item] = sum;
         }
         const total = Object.keys(values).map((key) => values[key]).reduce((totalValue, item) => totalValue + item, 0);
-        console.log(andarValues, "andarValues");
         let baharTotal = 0;
         let anderTotal = 0;
         if (Object.keys(andarValues).length) {
@@ -175,10 +194,13 @@ const GameBets = (props) => {
     };
     const handleChange = (e) => {
         const { id, value } = e.target;
-        // setState(prevState => ({
-        //     ...prevState,
-        //     [id]: value,
-        // }));
+        setFilter((prevState) => ({
+            ...prevState,
+            filterS: {
+                ...filter.filterS,
+                [id]: value,
+            },
+        }));
     };
     return (
         <>
@@ -187,25 +209,24 @@ const GameBets = (props) => {
             <Container className="mt--7" fluid>
                 {/* Dark table */}
                 <Row className="mt-5">
-                    <div className="col games-table">
+                    <div className="col ">
                         <Card className="shadow">
                             <CardHeader className="bg-transparent border-0">
-                                <h3 className="text-white mb-0">Games List</h3>
+                                <h3 className="mb-0">Games Bets</h3>
                                 <div className="d-flex mt-2">
                                     <InputGroup size="sm" className="w-25">
                                         <InputGroupAddon addonType="prepend" className="d-inline">
                                             <Button className="bg-default shadow"><i className="ni ni-calendar-grid-58 text-white" /></Button>
                                         </InputGroupAddon>
                                         <Input
-                                            size="sm"
                                             className="h-100"
                                             type="date"
                                             autoComplete="new-sdate"
-                                            id="start_date"
+                                            id="createdDate"
                                             placeholder="Start Date"
-                                            name="start_date"
-                                            value={filter.start_date}
-                                            // onChange={handleChange}
+                                            name="createdDate"
+                                            value={filter.filterS.createdDate}
+                                            onChange={handleChange}
                                             required
                                         />
                                     </InputGroup>
@@ -213,12 +234,13 @@ const GameBets = (props) => {
                                         <Input
                                             type="select"
                                             autoComplete="new-name"
-                                            // value={state.game_name}
+                                            value={filter.filterS.game_id}
                                             onChange={handleChange}
-                                            id="game_name"
+                                            id="game_id"
                                             placeholder="Select Game"
-                                            name="game_name"
+                                            name="game_id"
                                             required>
+                                            <option key={"select"} value={""}>Select Game</option>
                                             {gamesList && gamesList.length ?
                                                 gamesList.map((list, index) => {
                                                     return (
@@ -232,12 +254,13 @@ const GameBets = (props) => {
                                         <Input
                                             type="select"
                                             autoComplete="new-name"
-                                            // value={state.game_name}
+                                            value={filter.filterS.user_id}
                                             onChange={handleChange}
-                                            id="game_name"
+                                            id="user_id"
                                             placeholder="Select Player"
-                                            name="game_name"
+                                            name="user_id"
                                             required>
+                                            <option key={"select"} value={""}>Select User</option>
                                             {userList && userList.length ?
                                                 userList.map((list, index) => {
                                                     return (
@@ -249,140 +272,145 @@ const GameBets = (props) => {
                                     </InputGroup>
                                     <InputGroup size="sm" className="w-25 ml-2">
                                         <Input
-                                            className="h-100"
                                             type="number"
-                                            // onChange={handleChange}
+                                            onChange={handleChange}
                                             id="amount"
                                             placeholder="Amount"
                                             name="amount"
-                                            value=""
+                                            value={filter.filterS.amount}
                                         />
                                     </InputGroup>
-                                    <InputGroup size="sm">
-                                        <Button className="" color="primary" type="button">
-                                            Search
-                                        </Button>
+                                    <InputGroup size="sm" className="w-25 ml-2">
+                                        <Input
+                                            type="Button"
+                                            onClick={() => getGameBetsData({ ...filter.filterS })}
+                                            className="bg-default text-white"
+                                            value={"Search"}
+                                        ></Input>
                                     </InputGroup>
                                 </div>
                             </CardHeader>
-                            <div className="bet-table-container">
-                                <div className="l-sec">
-                                    <div className="bet-rows">
-                                        {
-                                            hrows.map((item, index) => {
-                                                return (
-                                                    <div key={item}>
-                                                        {
-                                                            vrows.map((sItem, sIndex) => {
-                                                                if (index === 0 || sIndex === 0) {
-                                                                    return (
-                                                                        <div key={`${item}_${sItem}`} className="l-item">
-                                                                            <label> {index === 0 ? sItem : item}</label>
-                                                                            <input
-                                                                                name={`${item}_${sItem}`}
-                                                                                value={inputValues[`${item}_${sItem}`]}
-                                                                                onChange={onRowValueChange}
-                                                                                type="textfield" />
-                                                                        </div>
-                                                                    )
-                                                                } else {
-                                                                    return (
-                                                                        <div key={`${item}_${sItem}`}  >
-                                                                            <input
-                                                                                // key={`${item}_${sItem}`} 
-                                                                                name={`${item}_${sItem}`}
-                                                                                value={inputValues[`${item}_${sItem}`]}
-                                                                                onChange={onRowValueChange}
-                                                                                type="textfield" />
-                                                                        </div>
-                                                                    )
-                                                                };
-                                                            })
-                                                        }
-                                                    </div>
-                                                )
-                                            })
-                                        }
+                            <div className="col games-table">
+                                <div>
+                                    <div className="bet-table-container ">
+                                        <div className="l-sec">
+                                            <div className="bet-rows">
+                                                {
+                                                    hrows.map((item, index) => {
+                                                        return (
+                                                            <div key={item}>
+                                                                {
+                                                                    vrows.map((sItem, sIndex) => {
+                                                                        if (index === 0 || sIndex === 0) {
+                                                                            return (
+                                                                                <div key={`${item}_${sItem}`} className="l-item">
+                                                                                    <label> {index === 0 ? sItem : item}</label>
+                                                                                    <input
+                                                                                        name={`${item}_${sItem}`}
+                                                                                        value={inputValues[`${item}_${sItem}`]}
+                                                                                        onChange={onRowValueChange}
+                                                                                        type="textfield" />
+                                                                                </div>
+                                                                            )
+                                                                        } else {
+                                                                            return (
+                                                                                <div key={`${item}_${sItem}`}  >
+                                                                                    <input
+                                                                                        // key={`${item}_${sItem}`} 
+                                                                                        name={`${item}_${sItem}`}
+                                                                                        value={inputValues[`${item}_${sItem}`]}
+                                                                                        onChange={onRowValueChange}
+                                                                                        type="textfield" />
+                                                                                </div>
+                                                                            )
+                                                                        };
+                                                                    })
+                                                                }
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                            <div className="result-row">
+                                                {
+                                                    vrows.map((item, index) => {
+                                                        return (
+                                                            <div key={`result_${item}`}>
+                                                                <input
+                                                                    name={`result_${item}`}
+                                                                    value={resultValues[`result_${item}`]}
+                                                                    // onChange={onResultValueChange}
+                                                                    type="textfield" />
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="r-sec">
+                                            <div className="total-bet">
+                                                Total bet = Rs {totalbat}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="result-row">
-                                        {
-                                            vrows.map((item, index) => {
-                                                return (
-                                                    <div key={`result_${item}`}>
-                                                        <input
-                                                            name={`result_${item}`}
-                                                            value={resultValues[`result_${item}`]}
-                                                            // onChange={onResultValueChange}
-                                                            type="textfield" />
-                                                    </div>
-                                                )
-                                            })
-                                        }
+
+                                    <div className="single-row-table">
+                                        <div className="h-title"><h3>ANDAR-HARUF</h3></div>
+                                        <div className="result-row single-row">
+                                            {
+                                                singleRows.map((item, index) => {
+                                                    return (
+                                                        <div key={`andar_${item}`} className="l-item">
+                                                            <label> {item}</label>
+                                                            <input
+                                                                name={`andar_${item}`}
+                                                                value={andarValues[`andar_${item}`]}
+                                                                onChange={onAndarValueChange}
+                                                                type="textfield" />
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                            <div key={`andar_total`} className="l-item">
+                                                <label>Total</label>
+                                                <input
+                                                    name={`andar_total`}
+                                                    value={totalandar}
+                                                    // onChange={onAndarValueChange}
+                                                    type="textfield" />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="r-sec">
-                                    <div className="total-bet">
-                                        Total bet = Rs {totalbat}
+
+                                    <div className="single-row-table">
+                                        <div className="h-title"><h3>BAHAR</h3></div>
+                                        <div className="result-row single-row">
+                                            {
+                                                singleRows.map((item, index) => {
+                                                    return (
+                                                        <div key={`bahar_${item}`} className="l-item">
+                                                            <label> {item}</label>
+                                                            <input
+                                                                name={`bahar_${item}`}
+                                                                value={baharValues[`bahar_${item}`]}
+                                                                onChange={onBaharValueChange}
+                                                                type="textfield" />
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                            <div key={`bahar_total`} className="l-item">
+                                                <label>Total</label>
+                                                <input
+                                                    name={`bahar_total`}
+                                                    value={totalbahar}
+                                                    // onChange={onBaharValueChange}
+                                                    type="textfield" />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div className="single-row-table">
-                                <div className="h-title"><h3>ANDAR-HARUF</h3></div>
-                                <div className="result-row single-row">
-                                    {
-                                        singleRows.map((item, index) => {
-                                            return (
-                                                <div key={`andar_${item}`} className="l-item">
-                                                    <label> {item}</label>
-                                                    <input
-                                                        name={`andar_${item}`}
-                                                        value={andarValues[`andar_${item}`]}
-                                                        onChange={onAndarValueChange}
-                                                        type="textfield" />
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                    <div key={`andar_total`} className="l-item">
-                                        <label>Total</label>
-                                        <input
-                                            name={`andar_total`}
-                                            value={totalandar}
-                                            // onChange={onAndarValueChange}
-                                            type="textfield" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="single-row-table">
-                                <div className="h-title"><h3>BAHAR</h3></div>
-                                <div className="result-row single-row">
-                                    {
-                                        singleRows.map((item, index) => {
-                                            return (
-                                                <div key={`bahar_${item}`} className="l-item">
-                                                    <label> {item}</label>
-                                                    <input
-                                                        name={`bahar_${item}`}
-                                                        value={baharValues[`bahar_${item}`]}
-                                                        onChange={onBaharValueChange}
-                                                        type="textfield" />
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                    <div key={`bahar_total`} className="l-item">
-                                        <label>Total</label>
-                                        <input
-                                            name={`bahar_total`}
-                                            value={totalbahar}
-                                            // onChange={onBaharValueChange}
-                                            type="textfield" />
-                                    </div>
-                                </div>
-                            </div>
-
                         </Card>
                     </div>
                 </Row>
