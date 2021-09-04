@@ -17,6 +17,7 @@
 */
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from 'react-redux';
+import moment from 'moment';
 import { Link, withRouter, useHistory } from "react-router-dom";
 // reactstrap components
 import {
@@ -135,7 +136,7 @@ const TransactionsHistory = (props) => {
                           <td>{list.transaction_mode}</td>
                           <td>{list.amount}</td>
                           <td>{list.transaction_type}</td>
-                          <td>{list.updatedAt}</td>
+                          <td>{moment(list.updatedAt).format('MM-DD-YYYY, h:mm a')}</td>
                         </tr>
                       )
                     }) : ''

@@ -16,6 +16,7 @@
 
 */
 import React, { useState, useEffect } from "react";
+import moment from 'moment';
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
 import { getUserRequest, updateUserRequest } from "../../redux/actions";
@@ -151,7 +152,7 @@ const PaymentRequest = (props) => {
                           <td>{list.transaction_mode}</td>
                           <td>{list.amount}</td>
                           <td>{list.transaction_type}</td>
-                          <td>{list.updatedAt}</td>
+                          <td>{moment(list.createdAt).format('MM-DD-YYYY, h:mm a')}</td>
                           <td>
                             <React.Fragment>
                               <button
