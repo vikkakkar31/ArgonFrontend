@@ -30,7 +30,11 @@ import {
   Dropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  Button
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
@@ -44,7 +48,10 @@ const TransactionsHistory = (props) => {
   const [filter, setFilter] = useState({
     filterS: {
       status: 'debit',
-      payment_method: 'bets'
+      payment_method: 'bets',
+      name_search: '',
+      amount_search: '',
+      date_search: ''
     }
   });
 
@@ -54,16 +61,23 @@ const TransactionsHistory = (props) => {
 
   const handleFilterChange = (e) => {
     e.preventDefault();
-    var filterS = {
-      status: e.currentTarget.getAttribute("dropdownvalue"),
-      payment_method: e.currentTarget.getAttribute("dropdownvalue")
-    }
+    // var filterS = {
+    //   status: e.currentTarget.getAttribute("dropdownvalue"),
+    //   payment_method: e.currentTarget.getAttribute("dropdownvalue"),
+    //   name_search: e.target.value,
+    //   amount_search: e.target.value,
+    //   date_search: e.target.value
+    // }
+    const { id, value } = e.target;
     setFilter(prevState => ({
       ...prevState,
-      filterS: { ...filterS }
+      filterS: { 
+        ...filter.filterS,
+        [id]: value, 
+      }
     }));
     getUserData({
-      transaction_type: e.currentTarget.getAttribute("dropdownvalue"),
+      transaction_type: e.currentTarget.getAttribute("dropdownvalue")
     })
   };
   const getUserData = (query = {}) => {
@@ -77,7 +91,14 @@ const TransactionsHistory = (props) => {
     debit: "Debit",
     credit: "Credit"
   }
+  const payment_method = {
+    gpay: "Gpay",
+    paytm: "Paytm",
+    card: "Card",
+    bets: "Bets"
+  }
   return (
+    console.log(filter.filterS, "FILTERS"),
     <>
       <Header />
       {/* Page content */}
@@ -88,8 +109,47 @@ const TransactionsHistory = (props) => {
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
                 <h3 className="text-white mb-0">Transaction History</h3>
-                <div className="">
-                  <UncontrolledDropdown size="sm" className="float-right">
+                <div className="d-flex mt-2">
+                  <InputGroup size="sm" className="w-25">
+                    <Input
+                      id="name_search"
+                      type="text"
+                      name="name_search"
+                      value={filter.filterS.name_search || ""}
+                      onChange={handleFilterChange}
+                      placeholder="Search for Name"
+                    />
+                    <InputGroupAddon addonType="append">
+                      <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      id="amount_search"
+                      type="number"
+                      name="amount_search"
+                      value={filter.filterS.amount_search || ""}
+                      onChange={handleFilterChange}
+                      placeholder="Search for Amount"
+                    />
+                    <InputGroupAddon addonType="append">
+                      <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      id="date_search"
+                      type="date"
+                      name="date_search"
+                      value={filter.filterS.date_search || ""}
+                      onChange={handleFilterChange}
+                      placeholder="Search for Date"
+                    />
+                    <InputGroupAddon addonType="append">
+                      <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <UncontrolledDropdown size="sm" className="ml-2">
                     <DropdownToggle caret className="">
                       {filter.filterS && filter.filterS.status ? status[filter.filterS.status] : "Status"}
                     </DropdownToggle>
@@ -98,13 +158,11 @@ const TransactionsHistory = (props) => {
                       <DropdownItem onClick={handleFilterChange} dropDownValue="credit">Credit</DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
-                </div>
-                <div className="">
-                  <UncontrolledDropdown size="sm" className="float-right">
+                  <UncontrolledDropdown size="sm" className="ml-2">
                     <DropdownToggle caret className="">
-                      {filter.filterS && filter.filterS.payment_method ? status[filter.filterS.payment_method] : "Payment Method"}
+                      {filter.filterS && filter.filterS.payment_method ? payment_method[filter.filterS.payment_method] : "Payment Method"}
                     </DropdownToggle>
-                    <DropdownMenu right id="method">
+                    <DropdownMenu right id="payment_method">
                       <DropdownItem onClick={handleFilterChange} dropDownValue="gpay">Gpay</DropdownItem>
                       <DropdownItem onClick={handleFilterChange} dropDownValue="paytm">Paytm</DropdownItem>
                       <DropdownItem onClick={handleFilterChange} dropDownValue="card">Card</DropdownItem>
