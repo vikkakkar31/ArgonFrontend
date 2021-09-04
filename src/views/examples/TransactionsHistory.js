@@ -56,8 +56,8 @@ const TransactionsHistory = (props) => {
   });
 
   useEffect(() => {
-    getUserData({ ...filter.filterS });
-  }, [filter.filterS]);
+    getUserData();
+  }, []);
 
   const handleFilterChange = (e) => {
     e.preventDefault();
@@ -170,6 +170,9 @@ const TransactionsHistory = (props) => {
                       <option key="card" value="card">Card</option>
                       <option key="bets" value="bets">Bets</option>
                     </Input>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input type="Button" onClick={() => getUserData({ ...filter.filterS })} className="bg-default text-white" value={"Search"}></Input>
                   </InputGroup>
                 </div>
               </CardHeader>
