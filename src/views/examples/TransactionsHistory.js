@@ -49,7 +49,7 @@ const TransactionsHistory = (props) => {
     filterS: {
       transaction_type: '',
       transaction_mode: '',
-      name_search: '',
+      phone_number: '',
       amount: '',
       createdAt: ''
     }
@@ -102,10 +102,10 @@ const TransactionsHistory = (props) => {
                 <div className="d-flex mt-2">
                   <InputGroup size="sm" className="w-25">
                     <Input
-                      id="name_search"
+                      id="phone_number"
                       type="text"
-                      name="name_search"
-                      value={filter.filterS.name_search || ""}
+                      name="phone_number"
+                      value={filter.filterS.phone_number || ""}
                       onChange={handleFilterChange}
                       placeholder="Search Phone Number"
                     />
