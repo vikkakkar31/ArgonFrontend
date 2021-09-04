@@ -18,6 +18,7 @@
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
+import { toastr } from 'react-redux-toastr'
 // reactstrap components
 import {
   Card,
@@ -25,15 +26,22 @@ import {
   Table,
   Container,
   Row,
+  Button,
+  CardBody,
+  FormGroup,
+  Form,
+  Input,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup,
   UncontrolledDropdown,
-  Dropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import { getWallets, updateWallet } from "../../redux/actions";
+import { getWallets, addMoneyToWallet } from "../../redux/actions";
 
 const Wallet = (props) => {
   const { walletsList } = props.wallets;
@@ -42,13 +50,25 @@ const Wallet = (props) => {
     status: false,
     rowKey: null
   });
-
+  const [state, setState] = useState({
+    wallet_id: "",
+    transaction_mode: "",
+    transaction_type: "",
+    amount: 0,
+    submitted: false,
+  });
   const [filter, setFilter] = useState({
     status: ''
   });
 
   const [totalAmount, setTotalAmount] = useState(null);
-
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setState(prevState => ({
+      ...prevState,
+      [id]: value,
+    }));
+  };
   useEffect(() => {
     dispatch({ type: 'LOADING_START' });
     dispatch(getWallets({}, (errors, res) => {
@@ -135,13 +155,158 @@ const Wallet = (props) => {
     // reset the total amount value
     setTotalAmount(null);
   }
-  console.log(walletsList, "walletsList");
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setState(prevState => ({
+      ...prevState,
+      submitted: true
+    }));
+    let reqData = {
+      "wallet_id": state.wallet_id,
+      "amount": state.amount,
+      "transaction_type": state.transaction_type,
+      "transaction_mode": state.transaction_mode,
+    }
+    dispatch(addMoneyToWallet(reqData, (res, errors) => {
+      toastr.success('Success', "Money Requested Successfully Please check and approve");
+      dispatch(getWallets({}, (errors, res) => {
+        dispatch({ type: 'LOADING_SUCCESS' });
+      }));
+    }));
+  };
   return (
     <>
       <Header />
       {/* Page content */}
       <Container className="mt--7" fluid>
         {/* Dark table */}
+        <Row className="mt-5">
+          <div className="col">
+            <Card className="bg-default shadow">
+              <CardHeader className="bg-transparent border-0">
+                <h3 className="text-white mb-0 text-center">Add Money To User Account</h3>
+              </CardHeader>
+              <CardBody>
+                <Form role="form">
+                  <FormGroup className="mb-3">
+                    <InputGroup className="input-group-alternative">
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="ni ni-ui-04" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="select"
+                        autoComplete="new-name"
+                        value={state.wallet_id}
+                        onChange={handleChange}
+                        className="form-control"
+                        id="wallet_id"
+                        placeholder="Select Game"
+                        name="wallet_id"
+                        required>
+                        {walletsList && walletsList.length ?
+                          walletsList.map((list, index) => {
+                            return (
+                              <option key={index} value={list._id}>{list?.user_id?.first_name + list?.user_id?.last_name}</option>
+                            )
+                          }) : ''
+                        }
+                      </Input>
+                    </InputGroup>
+                    {
+                      state.submitted && !state.wallet_id &&
+                      <div className="error">Wallet name is required</div>
+                    }
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup className="input-group-alternative">
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="ni ni-money-coins" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="number"
+                        autoComplete="new-wbetno"
+                        className="form-control"
+                        id="amount"
+                        placeholder="Enter amount"
+                        name="password"
+                        value={state.amount}
+                        onChange={handleChange}
+                        required
+                      />
+                    </InputGroup>
+                    {
+                      state.submitted && !state.amount &&
+                      <div className="error">Amount is required</div>
+                    }
+                  </FormGroup>
+                  <FormGroup className="mb-3">
+                    <InputGroup className="input-group-alternative">
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="ni ni-ui-04" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="select"
+                        autoComplete="new-name"
+                        value={state.transaction_type}
+                        onChange={handleChange}
+                        className="form-control"
+                        id="transaction_type"
+                        placeholder="Select Transaction Type"
+                        name="transaction_type"
+                        required>
+                        <option value={"credit"}>Credit</option>
+                        <option value={"debit"}>Debit</option>
+                      </Input>
+                    </InputGroup>
+                    {
+                      state.submitted && !state.transaction_type &&
+                      <div className="error">Transaction Type is required</div>
+                    }
+                  </FormGroup>
+                  <FormGroup className="mb-3">
+                    <InputGroup className="input-group-alternative">
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="ni ni-ui-04" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="select"
+                        autoComplete="new-name"
+                        value={state.transaction_mode}
+                        onChange={handleChange}
+                        className="form-control"
+                        id="transaction_mode"
+                        placeholder="Select Paymont Mode"
+                        name="transaction_mode"
+                        required>
+                        <option value={"gpay"}>Gpay</option>
+                        <option value={"paytm"}>Paytm</option>
+                        <option value={"card"}>Card</option>
+                        <option value={"bets"}>Bets</option>
+                      </Input>
+                    </InputGroup>
+                    {
+                      state.submitted && !state.transaction_mode &&
+                      <div className="error">Transaction Mode is required</div>
+                    }
+                  </FormGroup>
+                  <div className="text-center">
+                    <Button disabled={!(state.transaction_mode && state.transaction_type && state.amount && state.wallet_id)} onClick={handleSubmit} className="my-4" color="primary" type="button">
+                      Add Result
+                    </Button>
+                  </div>
+                </Form>
+              </CardBody>
+            </Card>
+          </div>
+        </Row>
         <Row className="mt-5">
           <div className="col">
             <Card className="bg-default shadow">
@@ -169,8 +334,6 @@ const Wallet = (props) => {
                     <th scope="col">Phone Number</th>
                     <th scope="col">Total Amount</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Action</th>
-                    <th scope="col" />
                   </tr>
                 </thead>
                 <tbody>
@@ -182,35 +345,6 @@ const Wallet = (props) => {
                           <td>{list.phone_number}</td>
                           <td>{list.total_amount}</td>
                           <td>{list.status}</td>
-                          <td>
-                            {
-                              inEditMode.status && inEditMode.rowKey === list.id ? (
-                                <React.Fragment>
-                                  <button
-                                    className={"btn-success"}
-                                    onClick={() => onSave({ id: list.id, newTotalAmount: totalAmount })}
-                                  >
-                                    Save
-                                  </button>
-
-                                  <button
-                                    className={"btn-secondary"}
-                                    style={{ marginLeft: 8 }}
-                                    onClick={() => onCancel()}
-                                  >
-                                    Cancel
-                                  </button>
-                                </React.Fragment>
-                              ) : (
-                                <button
-                                  className={"btn-primary"}
-                                  onClick={() => onEdit({ id: list.id, currentTotalAmount: list.total_amount })}
-                                >
-                                  Edit
-                                </button>
-                              )
-                            }
-                          </td>
                         </tr>
                       )
                     }) : ''

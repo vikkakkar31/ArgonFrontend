@@ -16,6 +16,9 @@ import {
   USER_UPDATE_START,
   USER_UPDATE_SUCCESS,
   USER_UPDATE_FAILURE,
+  ADD_MONEY_WALLET_START,
+  ADD_MONEY_WALLET_SUCCESS,
+  ADD_MONEY_WALLET_FAILURE,
   FORGOT_PASSWORD_START,
   FORGOT_PASSWORD_SUCCESS,
   FORGOT_PASSWORD_FAILURE,
@@ -35,8 +38,9 @@ import {
   registerUser as registerUserService,
   forgotPassword as forgotPasswordService,
   updateUser as updateProfileService,
+  addMoneyToWallet as addMoneyToWalletService,
   getUser as getUserListService,
-  getFilteredUserList as getFilteredUserListService, 
+  getFilteredUserList as getFilteredUserListService,
   getUserTransactions as getUserTransactionsService
 } from "../services";
 
@@ -194,4 +198,26 @@ export const getUserTransactions = (reqData, callback) => {
 
 export const setSelectedUser = (data, callback) => {
   return SimpleDispatchActionToReducer(SELECTED_USER, data, callback);
+};
+export const addMoneyToWallet = (body, callback) => {
+  return dispatchActionToReducer(
+    addMoneyToWalletService(body),
+    ADD_MONEY_WALLET_START,
+    ADD_MONEY_WALLET_SUCCESS,
+    ADD_MONEY_WALLET_FAILURE,
+    (error, res) => {
+      if (error) return;
+      else if (res !== undefined) {
+        sessionService
+          .saveUser({
+            ...res.data
+          })
+          .then(() => {
+            if (callback) callback(error, res);
+          });
+      } else {
+        console.log("undefined response");
+      }
+    }
+  );
 };

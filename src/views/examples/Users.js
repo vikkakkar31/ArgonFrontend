@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { useEffect, useState }  from "react";
+import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
 // reactstrap components
@@ -30,52 +30,52 @@ import {
   UncontrolledDropdown,
   InputGroup,
   InputGroupAddon,
-  DropdownToggle, 
-  DropdownMenu, 
-  DropdownItem  
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import { getUserList } from "../../redux/actions"; 
+import { getUserList } from "../../redux/actions";
 
 const Users = (props) => {
   console.log(props, "PROPSSS");
-  // const { UserList } = props.user;
+  const { userList } = props;
   const dispatch = useDispatch();
   const [filter, setFilter] = useState({
     status: ''
   });
-  
+
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
-		dispatch({ type: 'LOADING_START' });
-        dispatch(getUserList((errors, res) => {
-			  dispatch({ type: 'LOADING_SUCCESS' });
-        }));
-    }, []);
+    dispatch({ type: 'LOADING_START' });
+    dispatch(getUserList((errors, res) => {
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+  }, []);
 
-    const getSearchUser = (e) => {
-      e.preventDefault();
-      setSearchText(e.target.value);
-      // let user = shortListedUser.filter(user => {
-      //     let userName = user.shortlistedUser.first_name + user.shortlistedUser.last_name;
-      //     return userName.indexOf(e.target.value) > 0;
-      // });
-      // setSearchedShortListedUser(user);
-    };
+  const getSearchUser = (e) => {
+    e.preventDefault();
+    setSearchText(e.target.value);
+    // let user = shortListedUser.filter(user => {
+    //     let userName = user.shortlistedUser.first_name + user.shortlistedUser.last_name;
+    //     return userName.indexOf(e.target.value) > 0;
+    // });
+    // setSearchedShortListedUser(user);
+  };
 
-    const handleFilterChange = (e) => {
-      e.preventDefault();
-      var filterS = {
-        status: e.currentTarget.getAttribute("dropdownvalue")
-      }
-      setFilter(prevState => ({
-          ...prevState,
-          filter: filterS
-      }));
-      console.log(filter.status, "STATUSSS");
-    };
+  const handleFilterChange = (e) => {
+    e.preventDefault();
+    var filterS = {
+      status: e.currentTarget.getAttribute("dropdownvalue")
+    }
+    setFilter(prevState => ({
+      ...prevState,
+      filter: filterS
+    }));
+    console.log(filter.status, "STATUSSS");
+  };
 
   return (
     <>
@@ -100,7 +100,7 @@ const Users = (props) => {
                     <InputGroupAddon addonType="append">
                       <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
                     </InputGroupAddon>
-                  </InputGroup>                  
+                  </InputGroup>
                   <UncontrolledDropdown size="sm" className="w-50">
                     <DropdownToggle caret className="float-right">
                       {filter.status ? filter.status : "Status"}
@@ -119,24 +119,26 @@ const Users = (props) => {
               >
                 <thead className="thead-dark">
                   <tr>
-                    <th scope="col">Name</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
                     <th scope="col">Phone Number</th>
-                    <th scope="col">Total Amount</th>
+                    <th scope="col">Status</th>
                     <th scope="col" />
                   </tr>
                 </thead>
                 <tbody>
-                {/* {walletsList && walletsList.length ?
-                  walletsList.map((list, index) => {
-                    return(
-                    <tr>
-                      <td>{list.user_id}</td>
-                      <td>{list.phone_number}</td>
-                      <td>{list.total_amount}</td>
-                    </tr>
-                    )
-                  }) : ''
-                } */}
+                  {userList && userList.length ?
+                    userList.map((list, index) => {
+                      return (
+                        <tr key={index}>
+                          <td>{list.first_name}</td>
+                          <td>{list.last_name}</td>
+                          <td>{list.phone_number}</td>
+                          <td>{list.status}</td>
+                        </tr>
+                      )
+                    }) : ''
+                  }
                 </tbody>
               </Table>
             </Card>
@@ -151,7 +153,7 @@ function mapStateToProps(state) {
   return {
     user: state.session.user,
     userList: state.user.userList
-	};
+  };
 }
 
 export default withRouter(connect(mapStateToProps, {})(Users));

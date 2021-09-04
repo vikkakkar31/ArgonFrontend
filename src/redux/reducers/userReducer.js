@@ -24,7 +24,7 @@ export default function (state = INITIAL_STATE, action) {
     case LOGIN_SUCCESS:
       return { ...state, login: { error: {}, data: { ...action.data } } };
     case USER_GET_SUCCESS:
-      return { ...state, userList: [...action.data] };
+      return { ...state, userList: [...action.data.response] };
     case USER_TRANSACTIONS_GET_SUCCESS:
       return { ...state, userTransationList: [...action.data] };
     case SELECTED_USER:

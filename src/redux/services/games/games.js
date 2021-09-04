@@ -17,16 +17,23 @@ export function getGamesBets(queryParm) {
   });
 }
 export function addGame(reqData) {
-  return apiNoTokenCall({
+  return apiCall({
     method: "POST",
     url: `${API.addGame}`,
     data: reqData
   });
 }
 export function updateGameResults(reqData) {
-  return apiNoTokenCall({
-    method: "POST",
-    url: `${API.updateGameResults}`,
+  return apiCall({
+    method: "PUT",
+    url: `${API.updateGameResults}/${reqData._id}`,
     data: reqData
+  });
+}
+export function getGamesResult(queryParm) {
+  let query = createQueryParams(queryParm);
+  return apiCall({
+    method: "GET",
+    url: `${API.getGamesResult}${query}`,
   });
 }

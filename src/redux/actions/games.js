@@ -11,7 +11,10 @@ import {
     ADD_GAMES_FAILURE,
     UPDATE_GAME_RESULTS_START,
     UPDATE_GAME_RESULTS_SUCCESS,
-    UPDATE_GAME_RESULTS_FAILURE
+    UPDATE_GAME_RESULTS_FAILURE,
+    GET_GAME_RESULTS_START,
+    GET_GAME_RESULTS_SUCCESS,
+    GET_GAME_RESULTS_FAILURE,
 } from "../actionConstants";
 
 import dispatchActionToReducer, {
@@ -22,7 +25,8 @@ import {
     getGames as getGamesService,
     addGame as addGameService,
     getGamesBets as getGamesBetsService,
-    updateGameResults as updateGameResultsService
+    updateGameResults as updateGameResultsService,
+    getGamesResult as getGamesResultService,
 } from "../services";
 
 export const getGames = (query, callback) => {
@@ -82,6 +86,22 @@ export const getGamesBets = (query, callback) => {
         GET_GAMES_BETS_START,
         GET_GAMES_BETS_SUCCESS,
         GET_GAMES_BETS_FAILURE,
+        (error, res) => {
+            if (error) return;
+            else if (res !== undefined) {
+                if (callback) callback(null, res);
+            } else {
+                console.log("undefined response");
+            }
+        }
+    );
+};
+export const getGameResults = (query, callback) => {
+    return dispatchActionToReducer(
+        getGamesResultService(query),
+        GET_GAME_RESULTS_START,
+        GET_GAME_RESULTS_SUCCESS,
+        GET_GAME_RESULTS_FAILURE,
         (error, res) => {
             if (error) return;
             else if (res !== undefined) {

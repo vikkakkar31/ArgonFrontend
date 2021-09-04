@@ -7,7 +7,8 @@ export {
   updateUser,
   getUser,
   getFilteredUserList,
-  getUserTransactions
+  getUserTransactions,
+  addMoneyToWallet
 } from "./user";
 
 export {
@@ -28,5 +29,6 @@ export {
   getGames,
   addGame,
   getGamesBets,
-  updateGameResults
+  updateGameResults,
+  getGamesResult
 } from "./games";
