@@ -18,6 +18,7 @@
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
+import { toastr } from 'react-redux-toastr'
 // reactstrap components
 import {
   Card,
@@ -34,13 +35,13 @@ import {
   InputGroupText,
   InputGroup,
   UncontrolledDropdown,
-  DropdownToggle, 
-  DropdownMenu, 
+  DropdownToggle,
+  DropdownMenu,
   DropdownItem
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import { getGames, updateGameResults } from "../../redux/actions";
+import { getGameResults, updateGameResults, getGames } from "../../redux/actions";
 
 const GameResults = (props) => {
   console.log(props, "PROPSSSSSS");
@@ -48,8 +49,8 @@ const GameResults = (props) => {
   const dispatch = useDispatch();
   const [state, setState] = useState({
     game_name: "",
-    winning_bet_number: 0,
-    winning_amount: 0,
+    winning_bet_number: "",
+    winning_amount: "",
     submitted: false,
   });
   const [filter, setFilter] = useState({
@@ -59,47 +60,43 @@ const GameResults = (props) => {
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
-		dispatch({ type: 'LOADING_START' });
-        dispatch(getGames((errors, res) => {
-			  dispatch({ type: 'LOADING_SUCCESS' });
-        }));
-    }, []);
+    dispatch({ type: 'LOADING_START' });
+    dispatch(getGames((errors, res) => {
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+    dispatch(getGameResults((errors, res) => {
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+  }, []);
 
-    const getSearchGame = (e) => {
-      e.preventDefault();
-      setSearchText(e.target.value);
-      // let user = shortListedUser.filter(user => {
-      //     let userName = user.shortlistedUser.first_name + user.shortlistedUser.last_name;
-      //     return userName.indexOf(e.target.value) > 0;
-      // });
-      // setSearchedShortListedUser(user);
-    };
+  const getSearchGame = (e) => {
+    e.preventDefault();
+    setSearchText(e.target.value);
+    // let user = shortListedUser.filter(user => {
+    //     let userName = user.shortlistedUser.first_name + user.shortlistedUser.last_name;
+    //     return userName.indexOf(e.target.value) > 0;
+    // });
+    // setSearchedShortListedUser(user);
+  };
 
-    const handleFilterChange = (e) => {
-      e.preventDefault();
-      var filterS = {
-        status: e.currentTarget.getAttribute("dropdownvalue")
-      }
-      setFilter(prevState => ({
-          ...prevState,
-          filter: filterS
-      }));
-      console.log(filter.status, "STATUSSS");
-    };
+  const handleFilterChange = (e) => {
+    e.preventDefault();
+    var filterS = {
+      status: e.currentTarget.getAttribute("dropdownvalue")
+    }
+    setFilter(prevState => ({
+      ...prevState,
+      filter: filterS
+    }));
+    console.log(filter.status, "STATUSSS");
+  };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    if (id === id) {
-        setState(prevState => ({
-          ...prevState,
-          [id]: value,
-        }));
-      } else {
-        setState(prevState => ({
-          ...prevState,
-          [id]: value
-        }));
-      }
+    setState(prevState => ({
+      ...prevState,
+      [id]: value,
+    }));
   };
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -108,14 +105,18 @@ const GameResults = (props) => {
       submitted: true
     }));
     let reqData = {
-      game_name: state.game_name,
-      winning_bet_number: state.winning_bet_number,
-      winning_amount: state.winning_amount
+      "_id": state.game_name,
+      "role": "admin",
+      "today_game_result": {
+        "game_bet_id": state.game_name,
+        "winning_bet_number": state.winning_bet_number,
+        "winning_amount": state.winning_amount,
+      }
     }
     if (reqData) {
       dispatch(updateGameResults(reqData, (res, errors) => {
-        if(res && res.status == 200)
-        {
+        if (res && res.status == 200) {
+          toastr.success('Success', "Game Result Added")
           setState(prevState => ({
             ...prevState,
             submitted: true
@@ -124,7 +125,6 @@ const GameResults = (props) => {
       }));
     }
   };
-
   return (
     <>
       <Header />
@@ -157,8 +157,8 @@ const GameResults = (props) => {
                         required>
                         {gamesList && gamesList.length ?
                           gamesList.map((list, index) => {
-                            return(
-                              <option key={index}>{list.game_name}</option>
+                            return (
+                              <option key={index} value={list._id}>{list?.game_name}</option>
                             )
                           }) : ''
                         }
@@ -205,7 +205,7 @@ const GameResults = (props) => {
                         autoComplete="new-wamount"
                         className="form-control"
                         id="winning_amount"
-                        placeholder="Enter End Date"
+                        placeholder="Winning Amount"
                         name="winning_amount"
                         value={state.winning_amount}
                         onChange={handleChange}
@@ -219,8 +219,8 @@ const GameResults = (props) => {
                   </FormGroup>
                   <div className="text-center">
                     <Button disabled={!(state.game_name && state.winning_bet_number && state.winning_amount)} onClick={handleSubmit} className="my-4" color="primary" type="button">
-                    Add Result
-                  </Button>
+                      Add Result
+                    </Button>
                   </div>
                 </Form>
               </CardBody>
@@ -234,8 +234,8 @@ const GameResults = (props) => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
-                  <h3 className="text-white mb-0">Games List</h3>
-                  <div className="d-flex mt-2">
+                <h3 className="text-white mb-0">Games Result List</h3>
+                <div className="d-flex mt-2">
                   <InputGroup size="sm" className="w-50">
                     <Input
                       type="text"
@@ -247,7 +247,7 @@ const GameResults = (props) => {
                     <InputGroupAddon addonType="append">
                       <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
                     </InputGroupAddon>
-                  </InputGroup>    
+                  </InputGroup>
                   <UncontrolledDropdown size="sm" className="w-50">
                     <DropdownToggle caret className="float-right">
                       {filter.status ? filter.status : "Status"}
@@ -272,17 +272,17 @@ const GameResults = (props) => {
                   </tr>
                 </thead>
                 <tbody>
-                {gamesList && gamesList.length ?
-                  gamesList.map((list, index) => {
-                    return(
-                    <tr>
-                      <td>{list.game_name}</td>
-                      <td>{list.start_date}</td>
-                      <td>{list.end_date}</td>
-                    </tr>
-                    )
-                  }) : ''
-                }
+                  {gameResults && gameResults.length ?
+                    gameResults.map((list, index) => {
+                      return (
+                        <tr>
+                          <td>{list?.game_id?.game_name}</td>
+                          <td>{list?.winning_bet_number}</td>
+                          <td>{list?.winning_amount}</td>
+                        </tr>
+                      )
+                    }) : ''
+                  }
                 </tbody>
               </Table>
             </Card>

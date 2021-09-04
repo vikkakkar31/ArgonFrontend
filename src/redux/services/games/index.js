@@ -2,6 +2,7 @@ export {
     getGames,
     addGame,
     getGamesBets,
-    updateGameResults
+    updateGameResults,
+    getGamesResult
   } from "./games";
   

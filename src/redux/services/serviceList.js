@@ -4,6 +4,7 @@ const API = {
   login: "/users/signin",
   register: "/users/signup",
   updateUser: "/users/updateprofile",
+  addMoneyToWallet: "/transaction/requestMoney",
   usersList: "/users/findUser",
   usersFilteredList: "/users/usersFilteredList",
   usersTransactionsList: "/subscription_transactions/usersTransactionsList",
@@ -28,10 +29,11 @@ const API = {
   getGameBets: "/game_bets/getGameBets",
   getGames: "/games/getGames",
   addGame: "/games/createGame",
+  getGamesResult: "/game_results/getResults",
   getGamesBets: "/game_bets/getGameBets",
   getUserRequest: "/transaction/getPendingRequest",
   approveRequest: "/transaction/approveRequest",
-  updateGameResults: "/games/updateGame/:id"
+  updateGameResults: "/games/updateGame"
 };
 
 export default API;

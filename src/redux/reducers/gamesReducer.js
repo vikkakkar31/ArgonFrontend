@@ -5,7 +5,7 @@ import {
     GET_GAMES_SUCCESS,
     GET_GAMES_BETS_SUCCESS,
     GET_GAME_RESULTS_SUCCESS,
-    UPDATE_GAME_RESULTS_SUCCESS
+    UPDATE_GAME_RESULTS_SUCCESS,
 } from "../actionConstants";
 
 /** Initial State  */

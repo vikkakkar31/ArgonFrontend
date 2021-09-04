@@ -29,15 +29,22 @@ export function updateUser(reqData) {
     data: reqData
   });
 }
+export function addMoneyToWallet(reqData) {
+  return apiCall({
+    method: "POST",
+    url: `${API.addMoneyToWallet}`,
+    data: reqData
+  });
+}
 
 export function forgotPassword(email) {
   let url = `${API.forgotpassword}`;
   return apiNoTokenCall({
     method: "POST",
     url: url,
-    data: { 
+    data: {
       'email': email,
-      "origin" : `${hostConfig.origin}` 
+      "origin": `${hostConfig.origin}`
     }
   });
 }

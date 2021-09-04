@@ -23,15 +23,34 @@ import _ from "lodash";
 // reactstrap components
 import {
     Card,
+    CardHeader,
+    Table,
     Container,
     Row,
+    Button,
+    CardBody,
+    FormGroup,
+    Form,
+    Input,
+    InputGroupAddon,
+    InputGroupText,
+    InputGroup,
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import { addGame, getGamesBets } from "../../redux/actions";
+import { getGames, getGamesBets, getUserList } from "../../redux/actions";
 const GameBets = (props) => {
-    const { gameBets } = props.games;
+    const { userList } = props;
+    const { gameBets, gamesList } = props.games;
     const dispatch = useDispatch();
+    const [filter, setFilter] = useState({
+        status: '',
+        start_date: Date.now(),
+    });
     const [hrows, setHRowsCount] = useState(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]);
     const [vrows, setVRowsCount] = useState(["01", "11", "21", "31", "41", "51", "61", "71", "81", "91"]);
     const [singleRows, setSingleRowsCount] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
@@ -45,34 +64,44 @@ const GameBets = (props) => {
 
     useEffect(() => {
         dispatch({ type: 'LOADING_START' });
+        dispatch(getGames((errors, res) => {
+        }));
+        dispatch(getUserList((errors, res) => {
+        }));
         dispatch(getGamesBets({}, (errors, res) => {
             console.log(res, "ressasd");
             let userData = []
             var values = _.cloneDeep(inputValues);
+            var resultValues = _.cloneDeep(resultValues);
             var inside_bets = _.cloneDeep(andarValues);
             var outside_bets = _.cloneDeep(baharValues);
             res.data.forEach(element => {
-                element.bets.forEach((bets) => {
-                    let targetNUmber = bets.bet_number
-                    bets.user_bet.forEach((userBet) => {
-                        values[targetNUmber] = values[targetNUmber] ? values[targetNUmber] + userBet.bet_amount : userBet.bet_amount;
+                if (element.bets.length) {
+                    element.bets.forEach((bets) => {
+                        let targetNUmber = bets.bet_number;
+                        for (let item of vrows) {
+                            let sum = 0;
+                            for (let sitem of hrows) {
+                                let currentNUmber = Number(item) + Number(sitem) - 1;
+                                if (currentNUmber === targetNUmber) {
+                                    values[`${sitem}_${item}`] = values[`${sitem}_${item}`] ? values[`${sitem}_${item}`] + bets.bet_amount : bets.bet_amount;
+                                }
+                            }
+                        }
                     })
-
-                })
-                element.inside_bets.forEach((bets) => {
-                    let targetNUmber = bets.bet_number
-                    bets.user_bet.forEach((userBet) => {
-                        inside_bets[`andar_${targetNUmber}`] = values[targetNUmber] ? values[targetNUmber] + userBet.bet_amount : userBet.bet_amount;
+                }
+                if (element.inside_bets.length) {
+                    element.inside_bets.forEach((bets) => {
+                        let targetNUmber = bets.bet_number;
+                        inside_bets[`andar_${targetNUmber}`] = !isNaN(values[targetNUmber]) ? values[targetNUmber] + bets.bet_amount : bets.bet_amount;
                     })
-
-                })
-                element.outside_bets.forEach((bets) => {
-                    let targetNUmber = bets.bet_number
-                    bets.user_bet.forEach((userBet) => {
-                        outside_bets[`bahar_${targetNUmber}`] = values[targetNUmber] ? values[targetNUmber] + userBet.bet_amount : userBet.bet_amount;
+                }
+                if (element.outside_bets.length) {
+                    element.outside_bets.forEach((bets) => {
+                        let targetNUmber = bets.bet_number;
+                        outside_bets[`bahar_${targetNUmber}`] = !isNaN(values[targetNUmber]) ? values[targetNUmber] + bets.bet_amount : bets.bet_amount;
                     })
-
-                })
+                }
             });
             setInputValues(values);
             setAndarValues(inside_bets);
@@ -82,7 +111,7 @@ const GameBets = (props) => {
     }, []);
     useEffect(() => {
         calculateSumValues();
-    }, [inputValues]);
+    }, [inputValues, andarValues, baharValues]);
 
     // main table input value change
     const onRowValueChange = ({ target }) => {
@@ -106,7 +135,6 @@ const GameBets = (props) => {
         setTotalBahar(total);
         setBaharValues(values);
     };
-    console.log(gameBets, "gameBets", inputValues, andarValues);
 
     //calculate sum for main table vertical rows
     const calculateSumValues = () => {
@@ -119,12 +147,39 @@ const GameBets = (props) => {
             values["result_" + item] = sum;
         }
         const total = Object.keys(values).map((key) => values[key]).reduce((totalValue, item) => totalValue + item, 0);
+        console.log(andarValues, "andarValues");
+        let baharTotal = 0;
+        let anderTotal = 0;
+        if (Object.keys(andarValues).length) {
+            anderTotal = Object.keys(andarValues).map((key) => andarValues[key]).reduce((totalValue, item) => totalValue + Number(item), 0);
+        }
+        if (Object.keys(baharValues).length) {
+            baharTotal = Object.keys(baharValues).map((key) => baharValues[key]).reduce((totalValue, item) => totalValue + Number(item), 0);
+        }
+
+        setTotalBahar(baharTotal);
+        setTotalAndar(anderTotal);
         setTotalBat(total);
         setResultValues(values);
-
-
     };
-
+    const handleFilterChange = (e) => {
+        e.preventDefault();
+        var filterS = {
+            status: e.currentTarget.getAttribute("dropdownvalue")
+        }
+        setFilter(prevState => ({
+            ...prevState,
+            filter: filterS
+        }));
+        console.log(filter.status, "STATUSSS");
+    };
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        // setState(prevState => ({
+        //     ...prevState,
+        //     [id]: value,
+        // }));
+    };
     return (
         <>
             <Header />
@@ -132,10 +187,90 @@ const GameBets = (props) => {
             <Container className="mt--7" fluid>
                 {/* Dark table */}
                 <Row className="mt-5">
-
                     <div className="col games-table">
                         <Card className="shadow">
+                            <CardHeader className="bg-transparent border-0">
+                                <h3 className="text-white mb-0">Games List</h3>
+                                <div className="d-flex mt-2">
+                                    <FormGroup>
+                                        <InputGroup size="sm">
+                                            <InputGroupAddon addonType="prepend">
+                                                <InputGroupText>
+                                                    <i className="ni ni-calendar-grid-58" />
+                                                </InputGroupText>
+                                            </InputGroupAddon>
+                                            <Input
+                                                type="date"
+                                                autoComplete="new-sdate"
+                                                className="form-control"
+                                                id="start_date"
+                                                placeholder="Start Date"
+                                                name="start_date"
+                                                value={filter.start_date}
+                                                // onChange={handleChange}
+                                                required
+                                            />
+                                        </InputGroup>
+                                    </FormGroup>
+                                    <InputGroup size="sm">
+                                        <Input
+                                            type="select"
+                                            autoComplete="new-name"
+                                            // value={state.game_name}
+                                            onChange={handleChange}
+                                            className="form-control"
+                                            id="game_name"
+                                            placeholder="Select Game"
+                                            name="game_name"
+                                            required>
+                                            {gamesList && gamesList.length ?
+                                                gamesList.map((list, index) => {
+                                                    return (
+                                                        <option key={index} value={list._id}>{list?.game_name}</option>
+                                                    )
+                                                }) : ''
+                                            }
+                                        </Input>
+                                    </InputGroup>
+                                    <InputGroup size="sm">
+                                        <Input
+                                            type="select"
+                                            autoComplete="new-name"
+                                            // value={state.game_name}
+                                            onChange={handleChange}
+                                            className="form-control"
+                                            id="game_name"
+                                            placeholder="Select Player"
+                                            name="game_name"
+                                            required>
+                                            {userList && userList.length ?
+                                                userList.map((list, index) => {
+                                                    return (
+                                                        <option key={index} value={list._id}>{list?.first_name + list?.last_name}</option>
+                                                    )
+                                                }) : ''
+                                            }
+                                        </Input>
+                                    </InputGroup>
+                                    <InputGroup size="sm">
+                                        <Input
+                                            type="input"
+                                            autoComplete="amount"
+                                            // onChange={handleChange}
+                                            className="form-control"
+                                            id="amount"
+                                            placeholder="Amount"
+                                            name="amount"
+                                        />
+                                    </InputGroup>
+                                    <InputGroup size="sm">
+                                        <Button className="my-4" color="primary" type="button">
+                                            Search
+                                        </Button>
+                                    </InputGroup>
 
+                                </div>
+                            </CardHeader>
                             <div className="bet-table-container">
                                 <div className="l-sec">
                                     <div className="bet-rows">
@@ -264,7 +399,8 @@ const GameBets = (props) => {
 function mapStateToProps(state) {
     return {
         user: state.session.user,
-        games: state.games
+        games: state.games,
+        userList: state.user.userList
     };
 }
 

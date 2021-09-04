@@ -5,5 +5,6 @@ export {
   updateUser,
   getUser,
   getFilteredUserList,
-  getUserTransactions
+  getUserTransactions,
+  addMoneyToWallet
 } from "./user";
