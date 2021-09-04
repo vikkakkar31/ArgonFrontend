@@ -58,7 +58,7 @@ const Wallet = (props) => {
     submitted: false,
   });
   const [filter, setFilter] = useState({
-    status: ''
+    status: '',
   });
 
   const [totalAmount, setTotalAmount] = useState(null);
@@ -283,7 +283,7 @@ const Wallet = (props) => {
                         onChange={handleChange}
                         className="form-control"
                         id="transaction_mode"
-                        placeholder="Select Paymont Mode"
+                        placeholder="Select Payment Mode"
                         name="transaction_mode"
                         required>
                         <option value={"gpay"}>Gpay</option>
@@ -312,7 +312,19 @@ const Wallet = (props) => {
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
                 <h3 className="text-white mb-0">Wallet Details</h3>
-                <div className="">
+                <div className="d-flex mt-2">
+                  {/* <InputGroup size="sm" className="w-50">
+                    <Input
+                      type="text"
+                      name=""
+                      value={searchText || ""}
+                      onChange={getSearchUser}
+                      placeholder="Search....."
+                    />
+                    <InputGroupAddon addonType="append">
+                      <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
+                    </InputGroupAddon>
+                  </InputGroup> */}
                   <UncontrolledDropdown size="sm" className="float-right">
                     <DropdownToggle caret className="">
                       {filter.status ? filter.status : "Status"}
