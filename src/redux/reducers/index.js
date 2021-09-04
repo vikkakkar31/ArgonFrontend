@@ -6,9 +6,11 @@ import wallets from "./walletsReducer";
 import transactionHistory from "./transactionHistoryReducer"
 import games from "./gamesReducer";
 import gameBets from "./gameBetsReducer";
+import loader from "./loaderReducer";
 
 const appReducer = combineReducers({
   user,
+  loader,
   wallets,
   transactionHistory,
   games,

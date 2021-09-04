@@ -63,7 +63,6 @@ const TransactionsHistory = (props) => {
     }));
     getUserData({
       transaction_type: e.currentTarget.getAttribute("dropdownvalue"),
-      transaction_mode: e.currentTarget.getAttribute("dropdownvalue")
     })
   };
   const getUserData = (query = {}) => {
