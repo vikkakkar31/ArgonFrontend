@@ -107,7 +107,7 @@ const TransactionsHistory = (props) => {
                       name="name_search"
                       value={filter.filterS.name_search || ""}
                       onChange={handleFilterChange}
-                      placeholder="Search for Name"
+                      placeholder="Search Phone Number"
                     />
                     <InputGroupAddon addonType="append">
                       <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
@@ -120,7 +120,7 @@ const TransactionsHistory = (props) => {
                       name="amount"
                       value={filter.filterS.amount || ""}
                       onChange={handleFilterChange}
-                      placeholder="Search for Amount"
+                      placeholder="Search Amount"
                     />
                     <InputGroupAddon addonType="append">
                       <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
@@ -179,7 +179,7 @@ const TransactionsHistory = (props) => {
               >
                 <thead className="thead-dark">
                   <tr>
-                    <th scope="col">Name</th>
+                    <th scope="col">Phone Number</th>
                     <th scope="col">Payment Method</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Payment Type</th>
