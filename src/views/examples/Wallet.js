@@ -101,51 +101,6 @@ const Wallet = (props) => {
     setTotalAmount(currentTotalAmount);
   }
 
-  /**
-     *
-     * @param id
-     * @param newTotalAmount
-     */
-  const updateWallet = ({ id, newTotalAmount }) => {
-
-    // dispatch(updateProfile(newValue, (err, res) => {
-    //   res.then()
-    //   .then(err=>{
-    //     onCancel();
-    //     dispatch(getWallets((errors, res) => {
-    //       dispatch({ type: 'LOADING_SUCCESS' });
-    //       })
-    //     )
-    //   })
-    // }));
-    // fetch(`${INVENTORY_API_URL}/${id}`, {
-    //     method: "PATCH",
-    //     body: JSON.stringify({
-    //         total_amount: newTotalAmount
-    //     }),
-    //     headers: {
-    //         "Content-type": "application/json; charset=UTF-8"
-    //     }
-    // })
-    //     .then(response => response.json())
-    //     .then(json => {
-    //         // reset inEditMode and total amount values
-    //         onCancel();
-
-    //         // fetch the updated data
-    //         getWallets();
-    //     })
-  }
-
-  /**
-     *
-     * @param id -The id of the wallet
-     * @param newTotalAmount - The new total amount of the wallet
-     */
-  const onSave = ({ id, newTotalAmount }) => {
-    updateWallet({ id, newTotalAmount });
-  }
-
   const onCancel = () => {
     // reset the inEditMode state value
     setInEditMode({

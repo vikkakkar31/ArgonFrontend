@@ -15,12 +15,69 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
-
+import React, { useEffect, useState } from "react";
+import { connect, useDispatch } from 'react-redux';
+import { Link, withRouter, useHistory } from "react-router-dom";
+import { getTodayResult, getWallets, getTransactionHistory, getUserRequest, getGamesBets } from "../../redux/actions";
 // reactstrap components
 import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 
-const Header = () => {
+const Header = (props) => {
+  console.log(props, "props header");
+  const { todayResult } = props.games;
+  const { walletsList } = props.wallets;
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalAddLAmount, setTotalAddedAmount] = useState(0);
+  const [totalWithdrwalAmount, setTotalWithdrwalAmount] = useState(0);
+  const [pendingRequest, setPendingRequest] = useState(0);
+  const [lastBid, setLastBid] = useState(0);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch({ type: 'LOADING_START' });
+    dispatch(getTodayResult({}, (errors, res) => {
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+    dispatch(getWallets({}, (errors, res) => {
+      let total = 0;
+      res.data.forEach((wallet) => {
+        total = wallet.total_amount ? wallet.total_amount + total : total;
+      })
+      setTotalAmount(total);
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+    dispatch(getTransactionHistory({ transaction_type: 'credit' }, (errors, res) => {
+      let total = 0;
+      res.data.forEach((wallet) => {
+        total = (wallet.amount && wallet.transaction_status === 'approved') ? wallet.amount + total : total;
+      })
+      setTotalAddedAmount(total);
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+    dispatch(getTransactionHistory({ transaction_type: 'debit' }, (errors, res) => {
+      let total = 0;
+      res.data.forEach((wallet) => {
+        total = (wallet.amount && wallet.transaction_status === 'approved') ? wallet.amount + total : total;
+      })
+      setTotalWithdrwalAmount(total);
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+    dispatch(getUserRequest({}, (errors, res) => {
+      let total = res.data.length + pendingRequest;
+      setPendingRequest(total);
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+    dispatch(getUserRequest({ transaction_type: 'credit' }, (errors, res) => {
+      let total = res.data.length + pendingRequest;
+      setPendingRequest(total);
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+    dispatch(getGamesBets({}, (errors, res) => {
+      console.log(res, "ressasd");
+      let lastINdex = res.data.length ? res.data[res.data.length - 1] : {};
+      setLastBid(lastINdex);
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+  }, []);
   return (
     <>
       <div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
@@ -40,7 +97,7 @@ const Header = () => {
                           Today Add Money
                         </CardTitle>
                         <span className="h2 font-weight-bold mb-0">
-                          350,897
+                          {totalAddLAmount}
                         </span>
                       </div>
                       <Col className="col-auto">
@@ -51,9 +108,9 @@ const Header = () => {
                     </Row>
                     <p className="mt-3 mb-0 text-muted text-sm">
                       <span className="text-success mr-2">
-                        <i className="fa fa-arrow-up" /> 3.48%
+                        {/* <i className="fa fa-arrow-up" /> 3.48% */}
                       </span>{" "}
-                      <span className="text-nowrap">Since last month</span>
+                      {/* <span className="text-nowrap">Since last month</span> */}
                     </p>
                   </CardBody>
                 </Card>
@@ -69,7 +126,7 @@ const Header = () => {
                         >
                           Total withdrawal
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">2,356</span>
+                        <span className="h2 font-weight-bold mb-0"> {totalWithdrwalAmount}</span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
@@ -79,9 +136,9 @@ const Header = () => {
                     </Row>
                     <p className="mt-3 mb-0 text-muted text-sm">
                       <span className="text-danger mr-2">
-                        <i className="fas fa-arrow-down" /> 3.48%
+                        {/* <i className="fas fa-arrow-down" /> 3.48% */}
                       </span>{" "}
-                      <span className="text-nowrap">Since last week</span>
+                      {/* <span className="text-nowrap">Since last week</span> */}
                     </p>
                   </CardBody>
                 </Card>
@@ -95,9 +152,9 @@ const Header = () => {
                           tag="h5"
                           className="text-uppercase text-muted mb-0"
                         >
-                          Result
+                          Latest Result
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">924</span>
+                        <span className="h2 font-weight-bold mb-0">{todayResult.length ? todayResult[0]?.winning_bet_number : ''}</span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">
@@ -106,10 +163,7 @@ const Header = () => {
                       </Col>
                     </Row>
                     <p className="mt-3 mb-0 text-muted text-sm">
-                      <span className="text-warning mr-2">
-                        <i className="fas fa-arrow-down" /> 1.10%
-                      </span>{" "}
-                      <span className="text-nowrap">Since yesterday</span>
+                      <span className="text-nowrap">{todayResult.length ? todayResult[0].created_at : ''}</span>
                     </p>
                   </CardBody>
                 </Card>
@@ -125,7 +179,7 @@ const Header = () => {
                         >
                           Total Amount
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">49,65%</span>
+                        <span className="h2 font-weight-bold mb-0">{totalAmount}</span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-info text-white rounded-circle shadow">
@@ -135,9 +189,9 @@ const Header = () => {
                     </Row>
                     <p className="mt-3 mb-0 text-muted text-sm">
                       <span className="text-success mr-2">
-                        <i className="fas fa-arrow-up" /> 12%
+                        {/* <i className="fas fa-arrow-up" /> 12% */}
                       </span>{" "}
-                      <span className="text-nowrap">Since last month</span>
+                      {/* <span className="text-nowrap">Since last month</span> */}
                     </p>
                   </CardBody>
                 </Card>
@@ -155,7 +209,7 @@ const Header = () => {
                         >
                           Pending Request
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">49,65%</span>
+                        <span className="h2 font-weight-bold mb-0">{pendingRequest}</span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-info text-white rounded-circle shadow">
@@ -165,9 +219,9 @@ const Header = () => {
                     </Row>
                     <p className="mt-3 mb-0 text-muted text-sm">
                       <span className="text-success mr-2">
-                        <i className="fas fa-arrow-up" /> 12%
+                        {/* <i className="fas fa-arrow-up" /> 12% */}
                       </span>{" "}
-                      <span className="text-nowrap">Since last month</span>
+                      {/* <span className="text-nowrap">Since last month</span> */}
                     </p>
                   </CardBody>
                 </Card>
@@ -211,7 +265,7 @@ const Header = () => {
                         >
                           Last Budding
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">49,65%</span>
+                        <span className="h2 font-weight-bold mb-0">{lastBid._id ? lastBid.bets.length ? lastBid.bets[0].bet_number : '' : 'No Bid'}</span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-info text-white rounded-circle shadow">
@@ -263,5 +317,11 @@ const Header = () => {
     </>
   );
 };
+function mapStateToProps(state) {
+  return {
+    games: state.games,
+    wallets: state.wallets
+  };
+}
 
-export default Header;
+export default withRouter(connect(mapStateToProps, {})(Header));
