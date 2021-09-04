@@ -23,7 +23,6 @@ import { getTodayResult, getWallets, getTransactionHistory, getUserRequest, getG
 import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 
 const Header = (props) => {
-  console.log(props, "props header");
   const { todayResult } = props.games;
   const { walletsList } = props.wallets;
   const [totalAmount, setTotalAmount] = useState(0);
@@ -67,7 +66,6 @@ const Header = (props) => {
       dispatch({ type: 'LOADING_SUCCESS' });
     }));
     dispatch(getGamesBets({}, (errors, res) => {
-      console.log(res, "ressasd");
       let lastINdex = res.data.length ? res.data[res.data.length - 1] : {};
       setLastBid(lastINdex);
       dispatch({ type: 'LOADING_SUCCESS' });

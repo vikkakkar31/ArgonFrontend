@@ -51,7 +51,6 @@ export const getUserRequest = (query, callback) => {
         (error, res) => {
             if (error) return;
             else if (res !== undefined) {
-                console.log(res, "resdata");
                 if (callback) callback(null, res);
             } else {
                 console.log("undefined response");

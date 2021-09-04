@@ -47,21 +47,12 @@ const TransactionsHistory = (props) => {
 
   const [filter, setFilter] = useState({
     filterS: {
-<<<<<<< HEAD
-      transaction_type: '',
-      transaction_mode: '',
-      phone_number: 0,
-      amount: 0,
-      createdAt: ''
-    }
-=======
       transaction_type: "",
       transaction_mode: "",
       phone_number: "",
       amount: "",
       createdAt: "",
     },
->>>>>>> 12651b2e7be7afc9056b3b2c4ea4e868226ac8e5
   });
 
   useEffect(() => {
@@ -80,129 +71,6 @@ const TransactionsHistory = (props) => {
     }));
   };
   const getUserData = (query = {}) => {
-<<<<<<< HEAD
-    dispatch({ type: 'LOADING_START' });
-    dispatch(getTransactionHistory(query, (errors, res) => {
-      setTransactionHistory(res.response);
-      dispatch({ type: 'LOADING_SUCCESS' });
-    }));
-  }
-  return (
-    console.log(filter.filterS, "FILTERS"),
-    <>
-      <Header />
-      {/* Page content */}
-      <Container className="mt--7" fluid>
-        {/* Dark table */}
-        <Row className="mt-5">
-          <div className="col">
-            <Card className="bg-default shadow">
-              <CardHeader className="bg-transparent border-0">
-                <h3 className="text-white mb-0">Transaction History</h3>
-                <div className="d-flex mt-2">
-                  <InputGroup size="sm" className="w-25">
-                    <Input
-                      id="phone_number"
-                      type="text"
-                      name="phone_number"
-                      value={filter.filterS.phone_number || 0}
-                      onChange={handleFilterChange}
-                      placeholder="Search Phone Number"
-                    />
-                  </InputGroup>
-                  <InputGroup size="sm" className="w-25 ml-2">
-                    <Input
-                      id="amount"
-                      type="number"
-                      name="amount"
-                      value={filter.filterS.amount || 0}
-                      onChange={handleFilterChange}
-                      placeholder="Search Amount"
-                    />
-                  </InputGroup>
-                  <InputGroup size="sm" className="w-25 ml-2">
-                    <Input
-                      id="createdAt"
-                      type="date"
-                      name="createdAt"
-                      value={filter.filterS.createdAt || ""}
-                      onChange={handleFilterChange}
-                      placeholder="Search for Date"
-                    />
-                  </InputGroup>
-                  <InputGroup size="sm" className="w-25 ml-2">
-                    <Input
-                      type="select"
-                      value={filter.filterS.transaction_type}
-                      onChange={handleFilterChange}
-                      className="form-control"
-                      id="transaction_type"
-                      name="transaction_type"
-                      required>
-                      <option key="select" value="">Select Transaction Type</option>
-                      <option key="debit" value="debit">Debit</option>
-                      <option key="credit" value="credit">Credit</option>
-                    </Input>
-                  </InputGroup>
-                  <InputGroup size="sm" className="w-25 ml-2">
-                    <Input
-                      type="select"
-                      autoComplete="new-name"
-                      value={filter.filterS.transaction_mode}
-                      onChange={handleFilterChange}
-                      className="form-control"
-                      id="transaction_mode"
-                      placeholder="Select Payment Method"
-                      name="transaction_mode"
-                      required>
-                      <option key="select" value="">Select Payment Method</option>
-                      <option key="gpay" value="gpay">Gpay</option>
-                      <option key="paytm" value="paytm">Paytm</option>
-                      <option key="card" value="card">Card</option>
-                      <option key="bets" value="bets">Bets</option>
-                    </Input>
-                  </InputGroup>
-                  <InputGroup size="sm" className="w-25 ml-2">
-                    <Input type="Button" onClick={() => getUserData({ ...filter.filterS })} className="bg-default text-white" value={"Search"}></Input>
-                  </InputGroup>
-                </div>
-              </CardHeader>
-              <Table
-                className="align-items-center table-dark table-flush"
-                responsive
-              >
-                <thead className="thead-dark">
-                  <tr>
-                    <th scope="col">Phone Number</th>
-                    <th scope="col">Payment Method</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Payment Type</th>
-                    <th scope="col">Date</th>
-                    <th scope="col" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactionHistory && transactionHistory.length ?
-                    transactionHistory.map((list, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>{list.wallet_id.phone_number}</td>
-                          <td>{list.transaction_mode}</td>
-                          <td>{list.amount}</td>
-                          <td>{list.transaction_type}</td>
-                          <td>{moment(list.updatedAt).format('MM-DD-YYYY, h:mm a')}</td>
-                        </tr>
-                      )
-                    }) : ''
-                  }
-                </tbody>
-              </Table>
-            </Card>
-          </div>
-        </Row>
-      </Container>
-    </>
-=======
     dispatch({ type: "LOADING_START" });
     dispatch(
       getTransactionHistory(query, (errors, res) => {
@@ -380,7 +248,6 @@ const TransactionsHistory = (props) => {
         </Container>
       </>
     )
->>>>>>> 12651b2e7be7afc9056b3b2c4ea4e868226ac8e5
   );
 };
 

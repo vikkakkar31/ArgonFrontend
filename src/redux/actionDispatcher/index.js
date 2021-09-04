@@ -28,7 +28,6 @@ export default function DispatchActionToReducer(
             type: actionTypeSuccess,
             data: result.data
           });
-          console.log(result, "result");
           if (callback) callback(null, result);
         } else {
           dispatch({

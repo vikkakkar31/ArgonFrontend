@@ -77,10 +77,9 @@ const GameBets = (props) => {
 
     const getGameBetsData = (query = {}) => {
         dispatch(getGamesBets(query, (errors, res) => {
-            var values = _.cloneDeep(inputValues);
-            var inside_bets = _.cloneDeep(andarValues);
-            var outside_bets = _.cloneDeep(baharValues);
-            console.log(res.data.length, "ressasd");
+            var values = {};
+            var inside_bets = {};
+            var outside_bets = {};
             if (res.data.length) {
                 res.data.forEach(element => {
                     if (element.bets.length) {
@@ -128,7 +127,7 @@ const GameBets = (props) => {
             dispatch({ type: 'LOADING_SUCCESS' });
         }));
     }
-    console.log(inputValues,andarValues,baharValues,"hi here");
+    console.log(inputValues, andarValues, baharValues, "hi here");
     useEffect(() => {
         calculateSumValues();
     }, [inputValues, andarValues, baharValues]);
