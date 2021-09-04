@@ -192,33 +192,29 @@ const GameBets = (props) => {
                             <CardHeader className="bg-transparent border-0">
                                 <h3 className="text-white mb-0">Games List</h3>
                                 <div className="d-flex mt-2">
-                                    <FormGroup>
-                                        <InputGroup size="sm">
-                                            <InputGroupAddon addonType="prepend">
-                                                <InputGroupText>
-                                                    <i className="ni ni-calendar-grid-58" />
-                                                </InputGroupText>
-                                            </InputGroupAddon>
-                                            <Input
-                                                type="date"
-                                                autoComplete="new-sdate"
-                                                className="form-control"
-                                                id="start_date"
-                                                placeholder="Start Date"
-                                                name="start_date"
-                                                value={filter.start_date}
-                                                // onChange={handleChange}
-                                                required
-                                            />
-                                        </InputGroup>
-                                    </FormGroup>
-                                    <InputGroup size="sm">
+                                    <InputGroup size="sm" className="w-25">
+                                        <InputGroupAddon addonType="prepend" className="d-inline">
+                                            <Button className="bg-default shadow"><i className="ni ni-calendar-grid-58 text-white" /></Button>
+                                        </InputGroupAddon>
+                                        <Input
+                                            size="sm"
+                                            className="h-100"
+                                            type="date"
+                                            autoComplete="new-sdate"
+                                            id="start_date"
+                                            placeholder="Start Date"
+                                            name="start_date"
+                                            value={filter.start_date}
+                                            // onChange={handleChange}
+                                            required
+                                        />
+                                    </InputGroup>
+                                    <InputGroup size="sm" className="w-25 ml-2">
                                         <Input
                                             type="select"
                                             autoComplete="new-name"
                                             // value={state.game_name}
                                             onChange={handleChange}
-                                            className="form-control"
                                             id="game_name"
                                             placeholder="Select Game"
                                             name="game_name"
@@ -232,13 +228,12 @@ const GameBets = (props) => {
                                             }
                                         </Input>
                                     </InputGroup>
-                                    <InputGroup size="sm">
+                                    <InputGroup size="sm" className="w-25 ml-2">
                                         <Input
                                             type="select"
                                             autoComplete="new-name"
                                             // value={state.game_name}
                                             onChange={handleChange}
-                                            className="form-control"
                                             id="game_name"
                                             placeholder="Select Player"
                                             name="game_name"
@@ -252,23 +247,22 @@ const GameBets = (props) => {
                                             }
                                         </Input>
                                     </InputGroup>
-                                    <InputGroup size="sm">
+                                    <InputGroup size="sm" className="w-25 ml-2">
                                         <Input
-                                            type="input"
-                                            autoComplete="amount"
+                                            className="h-100"
+                                            type="number"
                                             // onChange={handleChange}
-                                            className="form-control"
                                             id="amount"
                                             placeholder="Amount"
                                             name="amount"
+                                            value=""
                                         />
                                     </InputGroup>
                                     <InputGroup size="sm">
-                                        <Button className="my-4" color="primary" type="button">
+                                        <Button className="" color="primary" type="button">
                                             Search
                                         </Button>
                                     </InputGroup>
-
                                 </div>
                             </CardHeader>
                             <div className="bet-table-container">
