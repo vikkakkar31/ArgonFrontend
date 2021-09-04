@@ -45,20 +45,15 @@ const Header = (props) => {
       setTotalAmount(total);
       dispatch({ type: 'LOADING_SUCCESS' });
     }));
-    dispatch(getTransactionHistory({ transaction_type: 'credit' }, (errors, res) => {
-      let total = 0;
+    dispatch(getTransactionHistory({}, (errors, res) => {
+      let wtotal = 0;
+      let atotal = 0;
       res.data.forEach((wallet) => {
-        total = (wallet.amount && wallet.transaction_status === 'approved') ? wallet.amount + total : total;
+        wtotal = (wallet.amount && wallet.transaction_status === 'approved' && wallet.transaction_type === 'debit') ? wallet.amount + wtotal : wtotal;
+        atotal = (wallet.amount && wallet.transaction_status === 'approved' && wallet.transaction_type === 'credit') ? wallet.amount + atotal : atotal;
       })
-      setTotalAddedAmount(total);
-      dispatch({ type: 'LOADING_SUCCESS' });
-    }));
-    dispatch(getTransactionHistory({ transaction_type: 'debit' }, (errors, res) => {
-      let total = 0;
-      res.data.forEach((wallet) => {
-        total = (wallet.amount && wallet.transaction_status === 'approved') ? wallet.amount + total : total;
-      })
-      setTotalWithdrwalAmount(total);
+      setTotalAddedAmount(atotal);
+      setTotalWithdrwalAmount(wtotal);
       dispatch({ type: 'LOADING_SUCCESS' });
     }));
     dispatch(getUserRequest({}, (errors, res) => {
