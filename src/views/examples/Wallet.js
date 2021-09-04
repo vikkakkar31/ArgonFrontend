@@ -46,6 +46,7 @@ import { getWallets, addMoneyToWallet } from "../../redux/actions";
 const Wallet = (props) => {
   const { walletsList } = props.wallets;
   const dispatch = useDispatch();
+  const [walletSet, setWallets] = useState([]);
   const [inEditMode, setInEditMode] = useState({
     status: false,
     rowKey: null
@@ -58,7 +59,11 @@ const Wallet = (props) => {
     submitted: false,
   });
   const [filter, setFilter] = useState({
-    status: '',
+    filterS: {
+      status: '',
+      phone_number: 0,
+      total_amount: 0
+    }
   });
 
   const [totalAmount, setTotalAmount] = useState(null);
@@ -78,15 +83,24 @@ const Wallet = (props) => {
 
   const handleFilterChange = (e) => {
     e.preventDefault();
-    var filterS = {
-      status: e.currentTarget.getAttribute("dropdownvalue")
-    }
+    const { id, value } = e.target;
     setFilter(prevState => ({
       ...prevState,
-      filter: filterS
+      filterS: {
+        ...filter.filterS,
+        [id]: value,
+      }
     }));
-    console.log(filter.status, "STATUSSS");
+    console.log(filter.filterS, "STATUSSS");
   };
+
+  const getWalletData = (query = {}) => {
+    dispatch({ type: 'LOADING_START' });
+    dispatch(getWallets(query, (errors, res) => {
+      setWallets(res.response);
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+  }
 
   /**
    *
@@ -268,27 +282,43 @@ const Wallet = (props) => {
               <CardHeader className="bg-transparent border-0">
                 <h3 className="text-white mb-0">Wallet Details</h3>
                 <div className="d-flex mt-2">
-                  {/* <InputGroup size="sm" className="w-50">
+                  <InputGroup size="sm" className="w-25">
                     <Input
+                      id="phone_number"
                       type="text"
-                      name=""
-                      value={searchText || ""}
-                      onChange={getSearchUser}
-                      placeholder="Search....."
+                      name="phone_number"
+                      value={filter.filterS.phone_number || 0}
+                      onChange={handleFilterChange}
+                      placeholder="Search Phone Number"
                     />
-                    <InputGroupAddon addonType="append">
-                      <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
-                    </InputGroupAddon>
-                  </InputGroup> */}
-                  <UncontrolledDropdown size="sm" className="float-right">
-                    <DropdownToggle caret className="">
-                      {filter.status ? filter.status : "Status"}
-                    </DropdownToggle>
-                    <DropdownMenu right id="status">
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Active">Active</DropdownItem>
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Inactive">Inactive</DropdownItem>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      id="total_amount"
+                      step="1"
+                      type="number"
+                      name="total_amount"
+                      value={filter.filterS.total_amount || 0}
+                      onChange={handleFilterChange}
+                      placeholder="Search Total Amount"
+                    />
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      type="select"
+                      value={filter.filterS.status}
+                      onChange={handleFilterChange}
+                      id="status"
+                      name="status"
+                      required>
+                      <option key="select" value="">Select Status</option>
+                      <option key="active" value="active">Active</option>
+                      <option key="inactive" value="inactive">Inactive</option>
+                    </Input>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input type="Button" onClick={() => getWalletData({ ...filter.filterS })} className="bg-default text-white" value={"Search"}></Input>
+                  </InputGroup>
                 </div>
               </CardHeader>
               <Table
@@ -297,7 +327,7 @@ const Wallet = (props) => {
               >
                 <thead className="thead-dark">
                   <tr>
-                    <th scope="col">Name</th>
+                    <th scope="col">User Name</th>
                     <th scope="col">Phone Number</th>
                     <th scope="col">Total Amount</th>
                     <th scope="col">Status</th>

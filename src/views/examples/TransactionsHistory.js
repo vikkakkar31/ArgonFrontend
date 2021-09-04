@@ -49,8 +49,8 @@ const TransactionsHistory = (props) => {
     filterS: {
       transaction_type: '',
       transaction_mode: '',
-      phone_number: '',
-      amount: '',
+      phone_number: 0,
+      amount: 0,
       createdAt: ''
     }
   });
@@ -77,16 +77,6 @@ const TransactionsHistory = (props) => {
       dispatch({ type: 'LOADING_SUCCESS' });
     }));
   }
-  const status = {
-    debit: "Debit",
-    credit: "Credit"
-  }
-  const transaction_mode = {
-    gpay: "Gpay",
-    paytm: "Paytm",
-    card: "Card",
-    bets: "Bets"
-  }
   return (
     console.log(filter.filterS, "FILTERS"),
     <>
@@ -105,26 +95,20 @@ const TransactionsHistory = (props) => {
                       id="phone_number"
                       type="text"
                       name="phone_number"
-                      value={filter.filterS.phone_number || ""}
+                      value={filter.filterS.phone_number || 0}
                       onChange={handleFilterChange}
                       placeholder="Search Phone Number"
                     />
-                    <InputGroupAddon addonType="append">
-                      <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
-                    </InputGroupAddon>
                   </InputGroup>
                   <InputGroup size="sm" className="w-25 ml-2">
                     <Input
                       id="amount"
                       type="number"
                       name="amount"
-                      value={filter.filterS.amount || ""}
+                      value={filter.filterS.amount || 0}
                       onChange={handleFilterChange}
                       placeholder="Search Amount"
                     />
-                    <InputGroupAddon addonType="append">
-                      <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
-                    </InputGroupAddon>
                   </InputGroup>
                   <InputGroup size="sm" className="w-25 ml-2">
                     <Input
@@ -135,9 +119,6 @@ const TransactionsHistory = (props) => {
                       onChange={handleFilterChange}
                       placeholder="Search for Date"
                     />
-                    <InputGroupAddon addonType="append">
-                      <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
-                    </InputGroupAddon>
                   </InputGroup>
                   <InputGroup size="sm" className="w-25 ml-2">
                     <Input
@@ -149,8 +130,8 @@ const TransactionsHistory = (props) => {
                       name="transaction_type"
                       required>
                       <option key="select" value="">Select Transaction Type</option>
-                      <option key="gpay" value="debit">Debit</option>
-                      <option key="paytm" value="credit">Credit</option>
+                      <option key="debit" value="debit">Debit</option>
+                      <option key="credit" value="credit">Credit</option>
                     </Input>
                   </InputGroup>
                   <InputGroup size="sm" className="w-25 ml-2">
@@ -161,10 +142,10 @@ const TransactionsHistory = (props) => {
                       onChange={handleFilterChange}
                       className="form-control"
                       id="transaction_mode"
-                      placeholder="Select Payment Mothod"
+                      placeholder="Select Payment Method"
                       name="transaction_mode"
                       required>
-                      <option key="select" value="">Select Payment Mothod</option>
+                      <option key="select" value="">Select Payment Method</option>
                       <option key="gpay" value="gpay">Gpay</option>
                       <option key="paytm" value="paytm">Paytm</option>
                       <option key="card" value="card">Card</option>

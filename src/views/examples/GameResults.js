@@ -34,10 +34,7 @@ import {
   InputGroupAddon,
   InputGroupText,
   InputGroup,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem
+  Label
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
@@ -47,6 +44,7 @@ const GameResults = (props) => {
   console.log(props, "PROPSSSSSS");
   const { gameResults, gamesList } = props.games;
   const dispatch = useDispatch();
+  const [gamesSet, setGames] = useState([]);
   const [state, setState] = useState({
     game_name: "",
     winning_bet_number: "",
@@ -54,10 +52,12 @@ const GameResults = (props) => {
     submitted: false,
   });
   const [filter, setFilter] = useState({
-    status: ''
+    filterS: {
+      game_name: "",
+      winning_bet_number: 0,
+      winning_amount: 0
+    }
   });
-
-  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     dispatch({ type: 'LOADING_START' });
@@ -69,27 +69,26 @@ const GameResults = (props) => {
     }));
   }, []);
 
-  const getSearchGame = (e) => {
-    e.preventDefault();
-    setSearchText(e.target.value);
-    // let user = shortListedUser.filter(user => {
-    //     let userName = user.shortlistedUser.first_name + user.shortlistedUser.last_name;
-    //     return userName.indexOf(e.target.value) > 0;
-    // });
-    // setSearchedShortListedUser(user);
-  };
-
   const handleFilterChange = (e) => {
     e.preventDefault();
-    var filterS = {
-      status: e.currentTarget.getAttribute("dropdownvalue")
-    }
+    const { id, value } = e.target;
     setFilter(prevState => ({
       ...prevState,
-      filter: filterS
+      filterS: {
+        ...filter.filterS,
+        [id]: value,
+      }
     }));
-    console.log(filter.status, "STATUSSS");
+    console.log(filter.filterS, "STATUSSS");
   };
+
+  const getGameResultData = (query = {}) => {
+    dispatch({ type: 'LOADING_START' });
+    dispatch(getGames(query, (errors, res) => {
+      setGames(res.response);
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+  }
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -236,27 +235,50 @@ const GameResults = (props) => {
               <CardHeader className="bg-transparent border-0">
                 <h3 className="text-white mb-0">Games Result List</h3>
                 <div className="d-flex mt-2">
-                  <InputGroup size="sm" className="w-50">
+                    <InputGroup size="sm" className="w-25">
+                      <Input
+                        type="select"
+                        autoComplete="new-name"
+                        value={filter.filterS.game_name}
+                        onChange={handleChange}
+                        id="game_name"
+                        placeholder="Select Game"
+                        name="game_name"
+                        required>
+                        <option key="select" value="">Select Game</option>
+                        {gamesList && gamesList.length ?
+                          gamesList.map((list, index) => {
+                            return (
+                              <option key={index} value={list._id}>{list?.game_name}</option>
+                            )
+                          }) : ''
+                        }
+                      </Input>
+                    </InputGroup>
+                    <InputGroup size="sm" className="w-25 ml-2">
                     <Input
+                      id="winning_bet_number"
                       type="text"
-                      name=""
-                      value={searchText || ""}
-                      onChange={getSearchGame}
-                      placeholder="Search....."
+                      name="winning_bet_number"
+                      value={filter.filterS.winning_bet_number || 0}
+                      onChange={handleFilterChange}
+                      placeholder="Search Winning Bet Number"
                     />
-                    <InputGroupAddon addonType="append">
-                      <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
-                    </InputGroupAddon>
                   </InputGroup>
-                  <UncontrolledDropdown size="sm" className="w-50">
-                    <DropdownToggle caret className="float-right">
-                      {filter.status ? filter.status : "Status"}
-                    </DropdownToggle>
-                    <DropdownMenu right id="status">
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Active">Active</DropdownItem>
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Inactive">Inactive</DropdownItem>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      id="winning_amount"
+                      step="1"
+                      type="number"
+                      name="winning_amount"
+                      value={filter.filterS.winning_amount || 0}
+                      onChange={handleFilterChange}
+                      placeholder="Search Winning Amount"
+                    />
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input type="Button" onClick={() => getGameResultData({ ...filter.filterS })} className="bg-default text-white" value={"Search"}></Input>
+                  </InputGroup>
                 </div>
               </CardHeader>
               <Table
