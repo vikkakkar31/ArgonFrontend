@@ -16,6 +16,7 @@
 
 */
 import React, { useEffect, useState } from "react";
+import moment from 'moment';
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
 // reactstrap components
@@ -269,8 +270,8 @@ const Game = (props) => {
                     return(
                     <tr>
                       <td>{list.game_name}</td>
-                      <td>{list.start_date}</td>
-                      <td>{list.end_date}</td>
+                      <td>{moment(list.start_date).format('MM-DD-YYYY, h:mm a')}</td>
+                      <td>{moment(list.end_date).format('MM-DD-YYYY, h:mm a')}</td>
                     </tr>
                     )
                   }) : ''

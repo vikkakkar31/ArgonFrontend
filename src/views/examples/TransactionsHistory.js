@@ -17,6 +17,7 @@
 */
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from 'react-redux';
+import moment from 'moment';
 import { Link, withRouter, useHistory } from "react-router-dom";
 // reactstrap components
 import {
@@ -46,11 +47,11 @@ const TransactionsHistory = (props) => {
 
   const [filter, setFilter] = useState({
     filterS: {
-      status: 'debit',
-      payment_method: 'bets',
-      name_search: '',
-      amount_search: '',
-      date_search: ''
+      transaction_type: '',
+      transaction_mode: '',
+      phone_number: '',
+      amount: '',
+      createdAt: ''
     }
   });
 
@@ -60,24 +61,14 @@ const TransactionsHistory = (props) => {
 
   const handleFilterChange = (e) => {
     e.preventDefault();
-    // var filterS = {
-    //   status: e.currentTarget.getAttribute("dropdownvalue"),
-    //   payment_method: e.currentTarget.getAttribute("dropdownvalue"),
-    //   name_search: e.target.value,
-    //   amount_search: e.target.value,
-    //   date_search: e.target.value
-    // }
     const { id, value } = e.target;
     setFilter(prevState => ({
       ...prevState,
-      filterS: { 
+      filterS: {
         ...filter.filterS,
-        [id]: value, 
+        [id]: value,
       }
     }));
-    getUserData({
-      transaction_type: e.currentTarget.getAttribute("dropdownvalue")
-    })
   };
   const getUserData = (query = {}) => {
     dispatch({ type: 'LOADING_START' });
@@ -90,7 +81,7 @@ const TransactionsHistory = (props) => {
     debit: "Debit",
     credit: "Credit"
   }
-  const payment_method = {
+  const transaction_mode = {
     gpay: "Gpay",
     paytm: "Paytm",
     card: "Card",
@@ -111,12 +102,12 @@ const TransactionsHistory = (props) => {
                 <div className="d-flex mt-2">
                   <InputGroup size="sm" className="w-25">
                     <Input
-                      id="name_search"
+                      id="phone_number"
                       type="text"
-                      name="name_search"
-                      value={filter.filterS.name_search || ""}
+                      name="phone_number"
+                      value={filter.filterS.phone_number || ""}
                       onChange={handleFilterChange}
-                      placeholder="Search for Name"
+                      placeholder="Search Phone Number"
                     />
                     <InputGroupAddon addonType="append">
                       <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
@@ -124,12 +115,12 @@ const TransactionsHistory = (props) => {
                   </InputGroup>
                   <InputGroup size="sm" className="w-25 ml-2">
                     <Input
-                      id="amount_search"
+                      id="amount"
                       type="number"
-                      name="amount_search"
-                      value={filter.filterS.amount_search || ""}
+                      name="amount"
+                      value={filter.filterS.amount || ""}
                       onChange={handleFilterChange}
-                      placeholder="Search for Amount"
+                      placeholder="Search Amount"
                     />
                     <InputGroupAddon addonType="append">
                       <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
@@ -137,10 +128,10 @@ const TransactionsHistory = (props) => {
                   </InputGroup>
                   <InputGroup size="sm" className="w-25 ml-2">
                     <Input
-                      id="date_search"
+                      id="createdAt"
                       type="date"
-                      name="date_search"
-                      value={filter.filterS.date_search || ""}
+                      name="createdAt"
+                      value={filter.filterS.createdAt || ""}
                       onChange={handleFilterChange}
                       placeholder="Search for Date"
                     />
@@ -148,26 +139,41 @@ const TransactionsHistory = (props) => {
                       <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
                     </InputGroupAddon>
                   </InputGroup>
-                  <UncontrolledDropdown size="sm" className="ml-2">
-                    <DropdownToggle caret className="">
-                      {filter.filterS && filter.filterS.status ? status[filter.filterS.status] : "Status"}
-                    </DropdownToggle>
-                    <DropdownMenu right id="status">
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="debit">Debit</DropdownItem>
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="credit">Credit</DropdownItem>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                  <UncontrolledDropdown size="sm" className="ml-2">
-                    <DropdownToggle caret className="">
-                      {filter.filterS && filter.filterS.payment_method ? payment_method[filter.filterS.payment_method] : "Payment Method"}
-                    </DropdownToggle>
-                    <DropdownMenu right id="payment_method">
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="gpay">Gpay</DropdownItem>
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="paytm">Paytm</DropdownItem>
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="card">Card</DropdownItem>
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="bets">Bets</DropdownItem>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      type="select"
+                      value={filter.filterS.transaction_type}
+                      onChange={handleFilterChange}
+                      className="form-control"
+                      id="transaction_type"
+                      name="transaction_type"
+                      required>
+                      <option key="select" value="">Select Transaction Type</option>
+                      <option key="gpay" value="debit">Debit</option>
+                      <option key="paytm" value="credit">Credit</option>
+                    </Input>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      type="select"
+                      autoComplete="new-name"
+                      value={filter.filterS.transaction_mode}
+                      onChange={handleFilterChange}
+                      className="form-control"
+                      id="transaction_mode"
+                      placeholder="Select Payment Mothod"
+                      name="transaction_mode"
+                      required>
+                      <option key="select" value="">Select Payment Mothod</option>
+                      <option key="gpay" value="gpay">Gpay</option>
+                      <option key="paytm" value="paytm">Paytm</option>
+                      <option key="card" value="card">Card</option>
+                      <option key="bets" value="bets">Bets</option>
+                    </Input>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input type="Button" onClick={() => getUserData({ ...filter.filterS })} className="bg-default text-white" value={"Search"}></Input>
+                  </InputGroup>
                 </div>
               </CardHeader>
               <Table
@@ -176,7 +182,7 @@ const TransactionsHistory = (props) => {
               >
                 <thead className="thead-dark">
                   <tr>
-                    <th scope="col">Name</th>
+                    <th scope="col">Phone Number</th>
                     <th scope="col">Payment Method</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Payment Type</th>
@@ -193,7 +199,7 @@ const TransactionsHistory = (props) => {
                           <td>{list.transaction_mode}</td>
                           <td>{list.amount}</td>
                           <td>{list.transaction_type}</td>
-                          <td>{list.updatedAt}</td>
+                          <td>{moment(list.updatedAt).format('MM-DD-YYYY, h:mm a')}</td>
                         </tr>
                       )
                     }) : ''
