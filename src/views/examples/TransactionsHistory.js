@@ -42,7 +42,8 @@ const TransactionsHistory = (props) => {
 
   const [filter, setFilter] = useState({
     filterS: {
-      status: 'debit'
+      status: 'debit',
+      payment_method: 'bets'
     }
   });
 
@@ -53,14 +54,16 @@ const TransactionsHistory = (props) => {
   const handleFilterChange = (e) => {
     e.preventDefault();
     var filterS = {
-      status: e.currentTarget.getAttribute("dropdownvalue")
+      status: e.currentTarget.getAttribute("dropdownvalue"),
+      payment_method: e.currentTarget.getAttribute("dropdownvalue")
     }
     setFilter(prevState => ({
       ...prevState,
       filterS: { ...filterS }
     }));
     getUserData({
-      transaction_type: e.currentTarget.getAttribute("dropdownvalue")
+      transaction_type: e.currentTarget.getAttribute("dropdownvalue"),
+      transaction_mode: e.currentTarget.getAttribute("dropdownvalue")
     })
   };
   const getUserData = (query = {}) => {
@@ -93,6 +96,19 @@ const TransactionsHistory = (props) => {
                     <DropdownMenu right id="status">
                       <DropdownItem onClick={handleFilterChange} dropDownValue="debit">Debit</DropdownItem>
                       <DropdownItem onClick={handleFilterChange} dropDownValue="credit">Credit</DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </div>
+                <div className="">
+                  <UncontrolledDropdown size="sm" className="float-right">
+                    <DropdownToggle caret className="">
+                      {filter.filterS && filter.filterS.payment_method ? status[filter.filterS.payment_method] : "Payment Method"}
+                    </DropdownToggle>
+                    <DropdownMenu right id="method">
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="gpay">Gpay</DropdownItem>
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="paytm">Paytm</DropdownItem>
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="card">Card</DropdownItem>
+                      <DropdownItem onClick={handleFilterChange} dropDownValue="bets">Bets</DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 </div>

@@ -24,7 +24,7 @@
   },
   "homepage": "http://argongame.s3-website.us-east-2.amazonaws.com/",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=3002 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
