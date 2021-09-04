@@ -2,6 +2,14 @@ import { apiCall, apiNoTokenCall, createQueryParams } from "../index";
 import API from "../serviceList";
 
 
+export function getTodayResult(queryParm) {
+  let query = createQueryParams(queryParm);
+  return apiCall({
+    method: "GET",
+    url: `${API.getTodayResult}${query}`,
+  });
+}
+
 export function getGames(queryParm) {
   let query = createQueryParams(queryParm);
   return apiCall({

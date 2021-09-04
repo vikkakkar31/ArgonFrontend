@@ -28,6 +28,7 @@ const API = {
   getTransactionHistory: "/transaction/getTransactionsHistory",
   getGameBets: "/game_bets/getGameBets",
   getGames: "/games/getGames",
+  getTodayResult: "/game_results/getLatestResult",
   addGame: "/games/createGame",
   getGamesResult: "/game_results/getResults",
   getGamesBets: "/game_bets/getGameBets",

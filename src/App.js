@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import { withRouter, Switch, Route, Redirect } from 'react-router-dom';
 import AdminLayout from "layouts/Admin.js";
 import AuthLayout from "layouts/Auth.js";
+import RenderLoader from "components/Loader/loader.js";
+
 import ReduxToastr from 'react-redux-toastr';
 import 'react-redux-toastr/lib/css/react-redux-toastr.min.css'
 class App extends Component {
@@ -25,7 +27,7 @@ class App extends Component {
           transitionOut="fadeOut"
           progressBar
            />
-        {/* <PageLoader isLoaded={this.props.isLoaded} /> */}
+        <RenderLoader isLoaded={this.props.isLoaded} />
         <Switch>
           {authenticated && checked && 
             <Switch>
@@ -58,7 +60,7 @@ function mapStateToProps({ session, networkReducer, loader }) {
     checked: session.checked,
     authenticated: session.authenticated,
     user: session.user,
-    // isLoaded: loader.load
+    isLoaded: loader.load
   };
 }
 export default withRouter(connect(mapStateToProps)(App));

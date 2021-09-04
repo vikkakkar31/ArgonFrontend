@@ -6,6 +6,7 @@ import {
     GET_GAMES_BETS_SUCCESS,
     GET_GAME_RESULTS_SUCCESS,
     UPDATE_GAME_RESULTS_SUCCESS,
+    GET_TODAY_RESULT_SUCCESS,
 } from "../actionConstants";
 
 /** Initial State  */
@@ -14,7 +15,8 @@ const INITIAL_STATE = {
     gameBets: [],
     gameResults: [],
     updateGameResults: {},
-    selectedGames: {}
+    selectedGames: {},
+    todayResult: {}
 };
 
 export default function (state = INITIAL_STATE, action) {
@@ -27,6 +29,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, gameResults: [...action.data] };
         case UPDATE_GAME_RESULTS_SUCCESS:
             return { ...state, updateGameResults: [...action.data] };
+        case GET_TODAY_RESULT_SUCCESS:
+            return { ...state, todayResult: [...action.data] };
         default:
             return state;
     }
