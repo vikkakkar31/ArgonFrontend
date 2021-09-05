@@ -53,9 +53,9 @@ const GameResults = (props) => {
   });
   const [filter, setFilter] = useState({
     filterS: {
-      game_name: "",
-      winning_bet_number: 0,
-      winning_amount: 0
+      game_id: "",
+      winning_bet_number: "",
+      winning_amount: ""
     }
   });
 
@@ -64,7 +64,7 @@ const GameResults = (props) => {
     dispatch(getGames((errors, res) => {
       dispatch({ type: 'LOADING_SUCCESS' });
     }));
-    dispatch(getGameResults((errors, res) => {
+    dispatch(getGameResults({}, (errors, res) => {
       dispatch({ type: 'LOADING_SUCCESS' });
     }));
   }, []);
@@ -79,12 +79,11 @@ const GameResults = (props) => {
         [id]: value,
       }
     }));
-    console.log(filter.filterS, "STATUSSS");
   };
 
   const getGameResultData = (query = {}) => {
     dispatch({ type: 'LOADING_START' });
-    dispatch(getGames(query, (errors, res) => {
+    dispatch(getGameResults(query, (errors, res) => {
       setGames(res.response);
       dispatch({ type: 'LOADING_SUCCESS' });
     }));
@@ -235,32 +234,32 @@ const GameResults = (props) => {
               <CardHeader className="bg-transparent border-0">
                 <h3 className="text-white mb-0">Games Result List</h3>
                 <div className="d-flex mt-2">
-                    <InputGroup size="sm" className="w-25">
-                      <Input
-                        type="select"
-                        autoComplete="new-name"
-                        value={filter.filterS.game_name}
-                        onChange={handleChange}
-                        id="game_name"
-                        placeholder="Select Game"
-                        name="game_name"
-                        required>
-                        <option key="select" value="">Select Game</option>
-                        {gamesList && gamesList.length ?
-                          gamesList.map((list, index) => {
-                            return (
-                              <option key={index} value={list._id}>{list?.game_name}</option>
-                            )
-                          }) : ''
-                        }
-                      </Input>
-                    </InputGroup>
-                    <InputGroup size="sm" className="w-25 ml-2">
+                  <InputGroup size="sm" className="w-25">
+                    <Input
+                      type="select"
+                      autoComplete="new-name"
+                      value={filter.filterS.game_id}
+                      onChange={handleFilterChange}
+                      id="game_id"
+                      placeholder="Select Game"
+                      name="game_id"
+                      required>
+                      <option key="select" value="">Select Game</option>
+                      {gamesList && gamesList.length ?
+                        gamesList.map((list, index) => {
+                          return (
+                            <option key={index} value={list._id}>{list?.game_name}</option>
+                          )
+                        }) : ''
+                      }
+                    </Input>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
                     <Input
                       id="winning_bet_number"
                       type="text"
                       name="winning_bet_number"
-                      value={filter.filterS.winning_bet_number || 0}
+                      value={filter.filterS.winning_bet_number}
                       onChange={handleFilterChange}
                       placeholder="Search Winning Bet Number"
                     />
@@ -271,7 +270,7 @@ const GameResults = (props) => {
                       step="1"
                       type="number"
                       name="winning_amount"
-                      value={filter.filterS.winning_amount || 0}
+                      value={filter.filterS.winning_amount}
                       onChange={handleFilterChange}
                       placeholder="Search Winning Amount"
                     />

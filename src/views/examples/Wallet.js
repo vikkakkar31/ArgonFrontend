@@ -61,8 +61,8 @@ const Wallet = (props) => {
   const [filter, setFilter] = useState({
     filterS: {
       status: '',
-      phone_number: 0,
-      total_amount: 0
+      phone_number: "",
+      total_amount: ""
     }
   });
 
@@ -287,7 +287,7 @@ const Wallet = (props) => {
                       id="phone_number"
                       type="text"
                       name="phone_number"
-                      value={filter.filterS.phone_number || 0}
+                      value={filter.filterS.phone_number}
                       onChange={handleFilterChange}
                       placeholder="Search Phone Number"
                     />
@@ -298,7 +298,7 @@ const Wallet = (props) => {
                       step="1"
                       type="number"
                       name="total_amount"
-                      value={filter.filterS.total_amount || 0}
+                      value={filter.filterS.total_amount}
                       onChange={handleFilterChange}
                       placeholder="Search Total Amount"
                     />
