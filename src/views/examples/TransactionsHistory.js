@@ -227,10 +227,10 @@ const TransactionsHistory = (props) => {
                       ? transactionHistory.map((list, index) => {
                           return (
                             <tr key={index}>
-                              <td>{list.wallet_id.phone_number}</td>
-                              <td>{list.transaction_mode}</td>
-                              <td>{list.amount}</td>
-                              <td>{list.transaction_type}</td>
+                              <td>{list?.wallet_id?.phone_number}</td>
+                              <td>{list?.transaction_mode}</td>
+                              <td>{list?.amount}</td>
+                              <td>{list?.transaction_type}</td>
                               <td>
                                 {moment(list.updatedAt).format(
                                   "MM-DD-YYYY, h:mm a"

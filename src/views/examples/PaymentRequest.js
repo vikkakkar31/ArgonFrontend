@@ -147,12 +147,12 @@ const PaymentRequest = (props) => {
                       return (
                         <tr key={index}>
                           <th scope="row">
-                            <span className="mb-0 text-sm">{list.wallet_id.phone_number}</span>
+                            <span className="mb-0 text-sm">{list?.wallet_id?.phone_number}</span>
                           </th>
-                          <td>{list.transaction_mode}</td>
-                          <td>{list.amount}</td>
-                          <td>{list.transaction_type}</td>
-                          <td>{moment(list.createdAt).format('MM-DD-YYYY, h:mm a')}</td>
+                          <td>{list?.transaction_mode}</td>
+                          <td>{list?.amount}</td>
+                          <td>{list?.transaction_type}</td>
+                          <td>{moment(list?.createdAt).format('MM-DD-YYYY, h:mm a')}</td>
                           <td>
                             <React.Fragment>
                               <button

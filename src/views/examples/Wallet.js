@@ -339,9 +339,9 @@ const Wallet = (props) => {
                       return (
                         <tr key={index}>
                           <td>{list?.user_id?.first_name + list?.user_id?.last_name}</td>
-                          <td>{list.phone_number}</td>
-                          <td>{list.total_amount}</td>
-                          <td>{list.status}</td>
+                          <td>{list?.phone_number}</td>
+                          <td>{list?.total_amount}</td>
+                          <td>{list?.status}</td>
                         </tr>
                       )
                     }) : ''

@@ -131,10 +131,10 @@ const Users = (props) => {
                     userList.map((list, index) => {
                       return (
                         <tr key={index}>
-                          <td>{list.first_name}</td>
-                          <td>{list.last_name}</td>
-                          <td>{list.phone_number}</td>
-                          <td>{list.status}</td>
+                          <td>{list?.first_name}</td>
+                          <td>{list?.last_name}</td>
+                          <td>{list?.phone_number}</td>
+                          <td>{list?.status}</td>
                         </tr>
                       )
                     }) : ''
