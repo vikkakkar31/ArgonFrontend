@@ -19,7 +19,7 @@ import React, { useState, useEffect } from "react";
 import moment from 'moment';
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
-import { getUserRequest, updateUserRequest } from "../../redux/actions";
+import { getWallets, getUserRequest, updateUserRequest, addMoneyToWallet } from "../../redux/actions";
 import { toastr } from 'react-redux-toastr'
 
 // reactstrap components
@@ -29,14 +29,18 @@ import {
   Table,
   Container,
   Row,
+  Button,
+  CardBody,
+  FormGroup,
+  Form,
+  Input,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup,
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem,
-  Input,
-  FormGroup,
-  Col,
-  Label
+  DropdownItem
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
@@ -44,33 +48,73 @@ import { getTransactionHistory } from "../../redux/actions";
 
 const PaymentRequest = (props) => {
   // console.log(props, "props");
+  const { walletsList } = props.wallets;
   const { transactionHistory, userRequests } = props.transactionHistory;
   // console.log(userRequests, "transactionHistory");
   const dispatch = useDispatch();
   const [userData, setUserData] = useState(userRequests);
+  const [state, setState] = useState({
+    wallet_id: "",
+    transaction_mode: "",
+    transaction_type: "",
+    amount: 0,
+    submitted: false,
+  });
   const [filter, setFilter] = useState({
     filterS: {
-      status: 'debit'
-    }
+      transaction_type: "",
+      transaction_mode: "",
+      phone_number: "",
+      amount: "",
+      createdAt: "",
+    },
   });
 
   useEffect(() => {
     getUserData();
-  }, []);
-
-  const handleFilterChange = (e) => {
-    e.preventDefault();
-    var filterS = {
-      status: e.currentTarget.getAttribute("dropdownvalue")
-    }
-    setFilter(prevState => ({
-      ...prevState,
-      filterS: { ...filterS }
+    dispatch(getWallets({}, (errors, res) => {
+      dispatch({ type: 'LOADING_SUCCESS' });
     }));
-    getUserData({
-      transaction_type: e.currentTarget.getAttribute("dropdownvalue")
-    })
+  }, []);
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setState(prevState => ({
+      ...prevState,
+      [id]: value,
+    }));
   };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setState(prevState => ({
+      ...prevState,
+      submitted: true
+    }));
+    let reqData = {
+      "wallet_id": state.wallet_id,
+      "amount": state.amount,
+      "transaction_type": state.transaction_type,
+      "transaction_mode": state.transaction_mode,
+    }
+    dispatch(addMoneyToWallet(reqData, (res, errors) => {
+      toastr.success('Success', "Money Requested Successfully Please check and approve");
+      dispatch(getUserRequest({}, (errors, res) => {
+        dispatch({ type: 'LOADING_SUCCESS' });
+      }));
+    }));
+  };
+  // const handleFilterChange = (e) => {
+  //   e.preventDefault();
+  //   var filterS = {
+  //     status: e.currentTarget.getAttribute("dropdownvalue")
+  //   }
+  //   setFilter(prevState => ({
+  //     ...prevState,
+  //     filterS: { ...filterS }
+  //   }));
+  //   getUserData({
+  //     transaction_type: e.currentTarget.getAttribute("dropdownvalue")
+  //   })
+  // };
   const onUpdate = (transaction, status) => {
     let updatData = {
       "transaction_id": transaction._id,
@@ -99,6 +143,17 @@ const PaymentRequest = (props) => {
     credit: "Credit"
 
   }
+  const handleFilterChange = (e) => {
+    e.preventDefault();
+    const { id, value } = e.target;
+    setFilter((prevState) => ({
+      ...prevState,
+      filterS: {
+        ...filter.filterS,
+        [id]: value,
+      },
+    }));
+  };
   return (
     <>
       <Header />
@@ -109,9 +164,242 @@ const PaymentRequest = (props) => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
+                <h3 className="text-white mb-0 text-center">Add Money To User Account</h3>
+              </CardHeader>
+              <CardBody>
+                <Form role="form">
+                  <FormGroup className="mb-3">
+                    <InputGroup className="input-group-alternative">
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="ni ni-ui-04" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="select"
+                        autoComplete="new-name"
+                        value={state.wallet_id}
+                        onChange={handleChange}
+                        className="form-control"
+                        id="wallet_id"
+                        placeholder="Select Game"
+                        name="wallet_id"
+                        required>
+                        <option value={""}>Select Wallet</option>
+                        {walletsList && walletsList.length ?
+                          walletsList.map((list, index) => {
+                            return (
+                              <option key={index} value={list._id}>{list?.user_id?.first_name + list?.user_id?.last_name}</option>
+                            )
+                          }) : ''
+                        }
+                      </Input>
+                    </InputGroup>
+                    {
+                      state.submitted && !state.wallet_id &&
+                      <div className="error">Wallet name is required</div>
+                    }
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup className="input-group-alternative">
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="ni ni-money-coins" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="number"
+                        autoComplete="new-wbetno"
+                        className="form-control"
+                        id="amount"
+                        placeholder="Enter amount"
+                        name="password"
+                        value={state.amount}
+                        onChange={handleChange}
+                        required
+                      />
+                    </InputGroup>
+                    {
+                      state.submitted && !state.amount &&
+                      <div className="error">Amount is required</div>
+                    }
+                  </FormGroup>
+                  <FormGroup className="mb-3">
+                    <InputGroup className="input-group-alternative">
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="ni ni-ui-04" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="select"
+                        autoComplete="new-name"
+                        value={state.transaction_type}
+                        onChange={handleChange}
+                        className="form-control"
+                        id="transaction_type"
+                        placeholder="Select Transaction Type"
+                        name="transaction_type"
+                        required>
+                        <option value={""}>Select Transaction Type</option>
+                        <option value={"credit"}>Credit</option>
+                        <option value={"debit"}>Debit</option>
+                      </Input>
+                    </InputGroup>
+                    {
+                      state.submitted && !state.transaction_type &&
+                      <div className="error">Transaction Type is required</div>
+                    }
+                  </FormGroup>
+                  <FormGroup className="mb-3">
+                    <InputGroup className="input-group-alternative">
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="ni ni-ui-04" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="select"
+                        autoComplete="new-name"
+                        value={state.transaction_mode}
+                        onChange={handleChange}
+                        className="form-control"
+                        id="transaction_mode"
+                        placeholder="Select Payment Mode"
+                        name="transaction_mode"
+                        required>
+                        <option value={""}>Select Paymont Mode</option>
+                        <option value={"gpay"}>Gpay</option>
+                        <option value={"paytm"}>Paytm</option>
+                        <option value={"card"}>Card</option>
+                        <option value={"bets"}>Bets</option>
+                      </Input>
+                    </InputGroup>
+                    {
+                      state.submitted && !state.transaction_mode &&
+                      <div className="error">Transaction Mode is required</div>
+                    }
+                  </FormGroup>
+                  <div className="text-center">
+                    <Button disabled={!(state.transaction_mode && state.transaction_type && state.amount && state.wallet_id)} onClick={handleSubmit} className="my-4" color="primary" type="button">
+                      Add Result
+                    </Button>
+                  </div>
+                </Form>
+              </CardBody>
+            </Card>
+          </div>
+        </Row>
+        <Row className="mt-5">
+          <div className="col">
+            <Card className="bg-default shadow">
+              <CardHeader className="bg-transparent border-0">
                 <h3 className="text-white mb-0">Payments</h3>
-                <div className="">
-                  <UncontrolledDropdown size="sm" className="float-right">
+                <div className="d-flex mt-2">
+                  <InputGroup size="sm" className="w-25">
+                    <Input
+                      id="phone_number"
+                      type="text"
+                      name="phone_number"
+                      value={filter.filterS.phone_number || ""}
+                      onChange={handleFilterChange}
+                      placeholder="Search Phone Number"
+                    />
+                    <InputGroupAddon addonType="append">
+                      <Button className="bg-default shadow">
+                        <i className="fas fa-search text-white" />
+                      </Button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      id="amount"
+                      type="number"
+                      name="amount"
+                      value={filter.filterS.amount || ""}
+                      onChange={handleFilterChange}
+                      placeholder="Search Amount"
+                    />
+                    <InputGroupAddon addonType="append">
+                      <Button className="bg-default shadow">
+                        <i className="fas fa-search text-white" />
+                      </Button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      id="createdAt"
+                      type="date"
+                      name="createdAt"
+                      value={filter.filterS.createdAt || ""}
+                      onChange={handleFilterChange}
+                      placeholder="Search for Date"
+                    />
+                    <InputGroupAddon addonType="append">
+                      <Button className="bg-default shadow">
+                        <i className="fas fa-search text-white" />
+                      </Button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      type="select"
+                      value={filter.filterS.transaction_type}
+                      onChange={handleFilterChange}
+                      className="form-control"
+                      id="transaction_type"
+                      name="transaction_type"
+                      required
+                    >
+                      <option key="select" value="">
+                        Select Transaction Type
+                      </option>
+                      <option key="gpay" value="debit">
+                        Debit
+                      </option>
+                      <option key="paytm" value="credit">
+                        Credit
+                      </option>
+                    </Input>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      type="select"
+                      autoComplete="new-name"
+                      value={filter.filterS.transaction_mode}
+                      onChange={handleFilterChange}
+                      className="form-control"
+                      id="transaction_mode"
+                      placeholder="Select Payment Mothod"
+                      name="transaction_mode"
+                      required
+                    >
+                      <option key="select" value="">
+                        Select Payment Mothod
+                      </option>
+                      <option key="gpay" value="gpay">
+                        Gpay
+                      </option>
+                      <option key="paytm" value="paytm">
+                        Paytm
+                      </option>
+                      <option key="card" value="card">
+                        Card
+                      </option>
+                      <option key="bets" value="bets">
+                        Bets
+                      </option>
+                    </Input>
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      type="Button"
+                      onClick={() => getUserData({ ...filter.filterS })}
+                      className="bg-default text-white"
+                      value={"Search"}
+                    ></Input>
+                  </InputGroup>
+                  {/* <UncontrolledDropdown size="sm" className="float-right">
                     <DropdownToggle caret className="">
                       {filter.filterS && filter.filterS.status ? status[filter.filterS.status] : "Status"}
                     </DropdownToggle>
@@ -124,7 +412,7 @@ const PaymentRequest = (props) => {
                     <Col sm={4}>
                       <Input type="text" placeholder="with a placeholder" />
                     </Col>
-                  </FormGroup>
+                  </FormGroup> */}
                 </div>
               </CardHeader>
               <Table
@@ -188,6 +476,7 @@ const PaymentRequest = (props) => {
 function mapStateToProps(state) {
   return {
     user: state.session.user,
+    wallets: state.wallets,
     transactionHistory: state.transactionHistory
   };
 }

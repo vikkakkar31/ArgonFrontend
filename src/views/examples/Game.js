@@ -35,8 +35,8 @@ import {
   InputGroupText,
   InputGroup,
   UncontrolledDropdown,
-  DropdownToggle, 
-  DropdownMenu, 
+  DropdownToggle,
+  DropdownMenu,
   DropdownItem
 } from "reactstrap";
 // core components
@@ -46,6 +46,7 @@ import { addGame, getGames } from "../../redux/actions";
 const Game = (props) => {
   const { gamesList } = props.games;
   const dispatch = useDispatch();
+  const [gameData, setGameData] = useState([...gamesList])
   const [state, setState] = useState({
     game_name: "",
     start_date: Date.now(),
@@ -59,47 +60,54 @@ const Game = (props) => {
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
-		dispatch({ type: 'LOADING_START' });
-        dispatch(getGames((errors, res) => {
-			  dispatch({ type: 'LOADING_SUCCESS' });
-        }));
-    }, []);
+    getGameData()
+  }, []);
+  const getGameData = () => {
+    dispatch({ type: 'LOADING_START' });
+    dispatch(getGames((errors, res) => {
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+  }
+  const getSearchGame = (e) => {
+    e.preventDefault();
+    setSearchText(e.target.value);
+    if (e.target.value) {
+      let games = gameData.filter(game => {
+        let search = (e.target.value).toLowerCase()
+        return JSON.stringify(game.game_name).toLowerCase().includes(search)
+      });
+      setGameData([...games]);
+    } else {
+      setGameData([...gamesList]);
+    }
 
-    const getSearchGame = (e) => {
-      e.preventDefault();
-      setSearchText(e.target.value);
-      // let user = shortListedUser.filter(user => {
-      //     let userName = user.shortlistedUser.first_name + user.shortlistedUser.last_name;
-      //     return userName.indexOf(e.target.value) > 0;
-      // });
-      // setSearchedShortListedUser(user);
-    };
+  };
 
-    const handleFilterChange = (e) => {
-      e.preventDefault();
-      var filterS = {
-        status: e.currentTarget.getAttribute("dropdownvalue")
-      }
-      setFilter(prevState => ({
-          ...prevState,
-          filter: filterS
-      }));
-      console.log(filter.status, "STATUSSS");
-    };
+  const handleFilterChange = (e) => {
+    e.preventDefault();
+    var filterS = {
+      status: e.currentTarget.getAttribute("dropdownvalue")
+    }
+    setFilter(prevState => ({
+      ...prevState,
+      filter: filterS
+    }));
+    console.log(filter.status, "STATUSSS");
+  };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
     if (id === id) {
-        setState(prevState => ({
-          ...prevState,
-          [id]: value,
-        }));
-      } else {
-        setState(prevState => ({
-          ...prevState,
-          [id]: value
-        }));
-      }
+      setState(prevState => ({
+        ...prevState,
+        [id]: value,
+      }));
+    } else {
+      setState(prevState => ({
+        ...prevState,
+        [id]: value
+      }));
+    }
   };
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -113,9 +121,9 @@ const Game = (props) => {
       end_date: state.end_date
     }
     if (reqData) {
-      dispatch(addGame(reqData, (res, errors) => {
-        if(res && res.status == 200)
-        {
+      dispatch(addGame(reqData, (errors, res) => {
+        if (res && res.status == 200) {
+          getGameData();
           setState(prevState => ({
             ...prevState,
             submitted: true
@@ -169,8 +177,8 @@ const Game = (props) => {
                           <i className="ni ni-calendar-grid-58" />
                         </InputGroupText>
                       </InputGroupAddon>
-                      <Input
-                        type="date"
+                      <input
+                        type="datetime-local"
                         autoComplete="new-sdate"
                         className="form-control"
                         id="start_date"
@@ -193,8 +201,8 @@ const Game = (props) => {
                           <i className="ni ni-calendar-grid-58" />
                         </InputGroupText>
                       </InputGroupAddon>
-                      <Input
-                        type="date"
+                      <input
+                        type="datetime-local"
                         autoComplete="new-edate"
                         className="form-control"
                         id="end_date"
@@ -212,8 +220,8 @@ const Game = (props) => {
                   </FormGroup>
                   <div className="text-center">
                     <Button disabled={!(state.game_name && state.start_date && state.end_date)} onClick={handleSubmit} className="my-4" color="primary" type="button">
-                    Add Game
-                  </Button>
+                      Add Game
+                    </Button>
                   </div>
                 </Form>
               </CardBody>
@@ -227,8 +235,8 @@ const Game = (props) => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
-                  <h3 className="text-white mb-0">Games List</h3>
-                  <div className="d-flex mt-2">
+                <h3 className="text-white mb-0">Games List</h3>
+                <div className="d-flex mt-2">
                   <InputGroup size="sm" className="w-50">
                     <Input
                       type="text"
@@ -240,7 +248,7 @@ const Game = (props) => {
                     <InputGroupAddon addonType="append">
                       <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
                     </InputGroupAddon>
-                  </InputGroup>    
+                  </InputGroup>
                   <UncontrolledDropdown size="sm" className="w-50">
                     <DropdownToggle caret className="float-right">
                       {filter.status ? filter.status : "Status"}
@@ -261,21 +269,22 @@ const Game = (props) => {
                     <th scope="col">Game Name</th>
                     <th scope="col">Start Date</th>
                     <th scope="col">End Date</th>
-                    <th scope="col" />
+                    <th scope="col" >Status </th>
                   </tr>
                 </thead>
                 <tbody>
-                {gamesList && gamesList.length ?
-                  gamesList.map((list, index) => {
-                    return(
-                    <tr>
-                      <td>{list.game_name}</td>
-                      <td>{moment(list.start_date).format('MM-DD-YYYY, h:mm a')}</td>
-                      <td>{moment(list.end_date).format('MM-DD-YYYY, h:mm a')}</td>
-                    </tr>
-                    )
-                  }) : ''
-                }
+                  {gameData && gameData.length ?
+                    gameData.map((list, index) => {
+                      return (
+                        <tr>
+                          <td>{list.game_name}</td>
+                          <td>{moment(list.start_date).format('MM-DD-YYYY, h:mm a')}</td>
+                          <td>{moment(list.end_date).format('MM-DD-YYYY, h:mm a')}</td>
+                          <td>{list?.status ? (list?.status).toUpperCase() : '-'}</td>
+                        </tr>
+                      )
+                    }) : ''
+                  }
                 </tbody>
               </Table>
             </Card>
