@@ -62,7 +62,7 @@ export const apiNoTokenCall = async ({
   data = null,
   responseType
 }) => {
-  const urls = `${hostConfig.apiBaseUrl}/api/${url}`;
+  const urls = `${hostConfig.apiBaseUrl}/api${url}`;
   function apiPromise() {
     return axios({
       method,
