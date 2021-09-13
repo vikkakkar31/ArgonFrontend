@@ -393,6 +393,9 @@ const PaymentRequest = (props) => {
                       <option key="refer" value="refer">
                         Referral
                       </option>
+                      <option key="win" value="win">
+                        Win
+                      </option>
                     </Input>
                   </InputGroup>
                   <InputGroup size="sm" className="w-25 ml-2">
