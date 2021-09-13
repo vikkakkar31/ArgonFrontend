@@ -54,27 +54,27 @@ const Game = (props) => {
     submitted: false,
   });
   const [filter, setFilter] = useState({
-    status: ''
+    filterS: {
+      status: ''
+    }
   });
 
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
-    getGameData()
-  }, []);
-  const getGameData = () => {
     dispatch({ type: 'LOADING_START' });
-    dispatch(getGames((errors, res) => {
+    dispatch(getGames({}, (errors, res) => {
       dispatch({ type: 'LOADING_SUCCESS' });
     }));
-  }
+  }, []);
+
   const getSearchGame = (e) => {
     e.preventDefault();
     setSearchText(e.target.value);
     if (e.target.value) {
       let games = gameData.filter(game => {
         let search = (e.target.value).toLowerCase()
-        return JSON.stringify(game.game_name).toLowerCase().includes(search)
+        return game.game_name && JSON.stringify(game.game_name).toLowerCase().includes(search)
       });
       setGameData([...games]);
     } else {
@@ -85,15 +85,24 @@ const Game = (props) => {
 
   const handleFilterChange = (e) => {
     e.preventDefault();
-    var filterS = {
-      status: e.currentTarget.getAttribute("dropdownvalue")
-    }
+    const { id, value } = e.target;
     setFilter(prevState => ({
       ...prevState,
-      filter: filterS
+      filterS: {
+        ...filter.filterS,
+        [id]: value,
+      }
     }));
-    console.log(filter.status, "STATUSSS");
+    console.log(filter.filterS, "STATUSSS");
   };
+
+  const getGameData = (query = {}) => {
+    dispatch({ type: 'LOADING_START' });
+    dispatch(getGames(query, (errors, res) => {
+      setGameData(res.response);
+      dispatch({ type: 'LOADING_SUCCESS' });
+    }));
+  }
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -123,7 +132,7 @@ const Game = (props) => {
     if (reqData) {
       dispatch(addGame(reqData, (errors, res) => {
         if (res && res.status == 200) {
-          getGameData();
+          getGames();
           setState(prevState => ({
             ...prevState,
             submitted: true
@@ -249,15 +258,22 @@ const Game = (props) => {
                       <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
                     </InputGroupAddon>
                   </InputGroup>
-                  <UncontrolledDropdown size="sm" className="w-50">
-                    <DropdownToggle caret className="float-right">
-                      {filter.status ? filter.status : "Status"}
-                    </DropdownToggle>
-                    <DropdownMenu right id="status">
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Active">Active</DropdownItem>
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Inactive">Inactive</DropdownItem>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      type="select"
+                      value={filter.filterS.status}
+                      onChange={handleFilterChange}
+                      id="status"
+                      name="status"
+                      required>
+                      <option key="select" value="">Select Status</option>
+                      <option key="active" value="active">Active</option>
+                      <option key="inactive" value="inactive">Inactive</option>
+                    </Input>
+                  </InputGroup>  
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input type="Button" onClick={() => getGameData({ ...filter.filterS })} className="bg-default text-white" value={"Search"}></Input>
+                  </InputGroup>                
                 </div>
               </CardHeader>
               <Table

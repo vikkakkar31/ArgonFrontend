@@ -30,7 +30,8 @@ import {
   Tables,
   Icons,
   TransactionsHistory,
-  PaymentRequest
+  PaymentRequest,
+  WinningResult
  } from "views/examples";
 
 var routes = [
@@ -69,6 +70,13 @@ var routes = [
     component: GameResults,
     layout: "/admin",
   },
+  // {
+  //   path: "/winningResults",
+  //   name: "Recent Winning Results",
+  //   icon: "ni ni-key-25 text-black",
+  //   component: WinningResult,
+  //   layout: "/admin",
+  // },
   {
     path: "/wallet",
     name: "Wallet",

@@ -52,6 +52,8 @@ const GameBets = (props) => {
             game_id: "",
             user_id: "",
             amount: "",
+            min:"",
+            max:"",
             createdDate: "",
         },
     });
@@ -218,7 +220,6 @@ const GameBets = (props) => {
                                             <Button className="bg-default shadow"><i className="ni ni-calendar-grid-58 text-white" /></Button>
                                         </InputGroupAddon>
                                         <Input
-                                            className="h-100"
                                             type="date"
                                             autoComplete="new-sdate"
                                             id="createdDate"
@@ -277,6 +278,26 @@ const GameBets = (props) => {
                                             placeholder="Amount"
                                             name="amount"
                                             value={filter.filterS.amount}
+                                        />
+                                    </InputGroup>
+                                    <InputGroup size="sm" className="w-25 ml-2">
+                                        <Input
+                                            type="number"
+                                            onChange={handleChange}
+                                            id="min"
+                                            placeholder="Min"
+                                            name="min"
+                                            value={filter.filterS.min}
+                                        />
+                                    </InputGroup>
+                                    <InputGroup size="sm" className="w-25 ml-2">
+                                        <Input
+                                            type="number"
+                                            onChange={handleChange}
+                                            id="max"
+                                            placeholder="Max"
+                                            name="max"
+                                            value={filter.filterS.max}
                                         />
                                     </InputGroup>
                                     <InputGroup size="sm" className="w-25 ml-2">

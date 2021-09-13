@@ -55,7 +55,7 @@ const PaymentRequest = (props) => {
   const [userData, setUserData] = useState(userRequests);
   const [state, setState] = useState({
     wallet_id: "",
-    transaction_mode: "",
+    transaction_mode: "card",
     transaction_type: "",
     amount: 0,
     submitted: false,
@@ -251,7 +251,7 @@ const PaymentRequest = (props) => {
                       <div className="error">Transaction Type is required</div>
                     }
                   </FormGroup>
-                  <FormGroup className="mb-3">
+                  {/* <FormGroup className="mb-3">
                     <InputGroup className="input-group-alternative">
                       <InputGroupAddon addonType="prepend">
                         <InputGroupText>
@@ -268,18 +268,19 @@ const PaymentRequest = (props) => {
                         placeholder="Select Payment Mode"
                         name="transaction_mode"
                         required>
-                        <option value={""}>Select Paymont Mode</option>
+                        <option value={""}>Select Payment Mode</option>
                         <option value={"gpay"}>Gpay</option>
                         <option value={"paytm"}>Paytm</option>
                         <option value={"card"}>Card</option>
                         <option value={"bets"}>Bets</option>
+                        <option value={"refer"}>Referral</option>
                       </Input>
                     </InputGroup>
                     {
                       state.submitted && !state.transaction_mode &&
                       <div className="error">Transaction Mode is required</div>
                     }
-                  </FormGroup>
+                  </FormGroup> */}
                   <div className="text-center">
                     <Button disabled={!(state.transaction_mode && state.transaction_type && state.amount && state.wallet_id)} onClick={handleSubmit} className="my-4" color="primary" type="button">
                       Add Result
@@ -370,12 +371,12 @@ const PaymentRequest = (props) => {
                       onChange={handleFilterChange}
                       className="form-control"
                       id="transaction_mode"
-                      placeholder="Select Payment Mothod"
+                      placeholder="Select Payment Method"
                       name="transaction_mode"
                       required
                     >
                       <option key="select" value="">
-                        Select Payment Mothod
+                        Select Payment Method
                       </option>
                       <option key="gpay" value="gpay">
                         Gpay
@@ -389,6 +390,9 @@ const PaymentRequest = (props) => {
                       <option key="bets" value="bets">
                         Bets
                       </option>
+                      <option key="refer" value="refer">
+                        Referral
+                      </option>
                     </Input>
                   </InputGroup>
                   <InputGroup size="sm" className="w-25 ml-2">
@@ -399,20 +403,6 @@ const PaymentRequest = (props) => {
                       value={"Search"}
                     ></Input>
                   </InputGroup>
-                  {/* <UncontrolledDropdown size="sm" className="float-right">
-                    <DropdownToggle caret className="">
-                      {filter.filterS && filter.filterS.status ? status[filter.filterS.status] : "Status"}
-                    </DropdownToggle>
-                    <DropdownMenu right id="status">
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="debit">Debit</DropdownItem>
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="credit">Credit</DropdownItem>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                  <FormGroup row>
-                    <Col sm={4}>
-                      <Input type="text" placeholder="with a placeholder" />
-                    </Col>
-                  </FormGroup> */}
                 </div>
               </CardHeader>
               <Table
