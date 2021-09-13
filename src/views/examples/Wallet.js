@@ -149,7 +149,7 @@ const Wallet = (props) => {
       {/* Page content */}
       <Container className="mt--7" fluid>
         {/* Dark table */}
-        <Row className="mt-5">
+        {/* <Row className="mt-5">
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
@@ -275,7 +275,7 @@ const Wallet = (props) => {
               </CardBody>
             </Card>
           </div>
-        </Row>
+        </Row> */}
         <Row className="mt-5">
           <div className="col">
             <Card className="bg-default shadow">
