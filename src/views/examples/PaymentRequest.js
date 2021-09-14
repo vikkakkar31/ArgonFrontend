@@ -189,7 +189,7 @@ const PaymentRequest = (props) => {
                         {walletsList && walletsList.length ?
                           walletsList.map((list, index) => {
                             return (
-                              <option key={index} value={list._id}>{list?.user_id?.first_name + list?.user_id?.last_name}</option>
+                              <option key={index} value={list._id}>{list?.phone_number}</option>
                             )
                           }) : ''
                         }
