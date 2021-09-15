@@ -17,6 +17,12 @@
 */
 import React, { useState, useEffect } from "react";
 import moment from 'moment';
+import TextField from '@material-ui/core/TextField';
+import Select from '@material-ui/core/Select';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
 import { getWallets, getUserRequest, updateUserRequest, addMoneyToWallet } from "../../redux/actions";
@@ -49,6 +55,13 @@ import { getTransactionHistory } from "../../redux/actions";
 const PaymentRequest = (props) => {
   // console.log(props, "props");
   const { walletsList } = props.wallets;
+  let walletData = walletsList.filter((wallet) => {
+    return wallet?.phone_number
+  })
+  const filterOptions = createFilterOptions({
+    ignoreCase: false,
+    ignoreAccents: false,
+  });
   const { transactionHistory, userRequests } = props.transactionHistory;
   // console.log(userRequests, "transactionHistory");
   const dispatch = useDispatch();
@@ -56,8 +69,8 @@ const PaymentRequest = (props) => {
   const [state, setState] = useState({
     wallet_id: "",
     transaction_mode: "card",
-    transaction_type: "",
-    amount: 0,
+    transaction_type: "none",
+    amount: null,
     submitted: false,
   });
   const [filter, setFilter] = useState({
@@ -71,17 +84,25 @@ const PaymentRequest = (props) => {
   });
 
   useEffect(() => {
-    getUserData();
+    getUserData({ transaction_type: "credit" });
     dispatch(getWallets({}, (errors, res) => {
       dispatch({ type: 'LOADING_SUCCESS' });
     }));
   }, []);
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    setState(prevState => ({
-      ...prevState,
-      [id]: value,
-    }));
+    const { id, value, name } = e.target;
+    if (name) {
+      setState(prevState => ({
+        ...prevState,
+        [name]: value,
+      }));
+    } else {
+      setState(prevState => ({
+        ...prevState,
+        [id]: value,
+      }));
+    }
+
   };
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -127,7 +148,7 @@ const PaymentRequest = (props) => {
       } else {
         toastr.success('Success', 'Request Updated Successfully')
       }
-      getUserData();
+      getUserData({ transaction_type: "credit" });
     }));
   }
   const getUserData = (query = {}) => {
@@ -137,7 +158,6 @@ const PaymentRequest = (props) => {
       dispatch({ type: 'LOADING_SUCCESS' });
     }));
   }
-  console.log(filter, "STATUSSS");
   const status = {
     debit: "Debit",
     credit: "Credit"
@@ -162,38 +182,39 @@ const PaymentRequest = (props) => {
         {/* Dark table */}
         <Row className="mt-5">
           <div className="col">
-            <Card className="bg-default shadow">
+            <Card className="bg-secondary shadow">
               <CardHeader className="bg-transparent border-0">
-                <h3 className="text-white mb-0 text-center">Add Money To User Account</h3>
+                <h3 className="mb-0 text-center">Add Money To User Account</h3>
               </CardHeader>
               <CardBody>
                 <Form role="form">
                   <FormGroup className="mb-3">
                     <InputGroup className="input-group-alternative">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <i className="ni ni-ui-04" />
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input
-                        type="select"
-                        autoComplete="new-name"
-                        value={state.wallet_id}
-                        onChange={handleChange}
-                        className="form-control"
+                      <Autocomplete
+                        filterOptions={filterOptions}
                         id="wallet_id"
-                        placeholder="Select Game"
-                        name="wallet_id"
-                        required>
-                        <option value={""}>Select Wallet</option>
-                        {walletsList && walletsList.length ?
-                          walletsList.map((list, index) => {
-                            return (
-                              <option key={index} value={list._id}>{list?.phone_number}</option>
-                            )
-                          }) : ''
-                        }
-                      </Input>
+                        options={walletData}
+                        value={state.wallet_id}
+                        onChange={(option, value) => {
+                          setState(prevState => ({
+                            ...prevState,
+                            wallet_id: value,
+                          }));
+                        }}
+                        renderOption={(option) => (
+                          <React.Fragment>
+                            <Grid item xs>
+                              {option?.user_id?.first_name + option?.user_id?.last_name}
+                              <Typography variant="body2" color="textSecondary">
+                                {option?.phone_number}
+                              </Typography>
+                            </Grid>
+                          </React.Fragment>
+                        )}
+                        fullWidth={true}
+                        getOptionLabel={(option) => option?.phone_number}
+                        renderInput={(params) => <TextField style={{ color: "white" }} {...params} label="Select Phone Number" variant="outlined" fullWidth />}
+                      />
                     </InputGroup>
                     {
                       state.submitted && !state.wallet_id &&
@@ -202,18 +223,13 @@ const PaymentRequest = (props) => {
                   </FormGroup>
                   <FormGroup>
                     <InputGroup className="input-group-alternative">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <i className="ni ni-money-coins" />
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input
+                      <TextField
+                        fullWidth
                         type="number"
-                        autoComplete="new-wbetno"
-                        className="form-control"
+                        variant="outlined"
                         id="amount"
                         placeholder="Enter amount"
-                        name="password"
+                        name="amount"
                         value={state.amount}
                         onChange={handleChange}
                         required
@@ -226,28 +242,26 @@ const PaymentRequest = (props) => {
                   </FormGroup>
                   <FormGroup className="mb-3">
                     <InputGroup className="input-group-alternative">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <i className="ni ni-ui-04" />
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input
+                      <Select
+                        fullWidth
                         type="select"
-                        autoComplete="new-name"
                         value={state.transaction_type}
                         onChange={handleChange}
-                        className="form-control"
+                        inputProps={{
+                          id: 'transaction_type',
+                          'aria-label': 'Without label'
+                        }}
+                        variant="outlined"
                         id="transaction_type"
-                        placeholder="Select Transaction Type"
                         name="transaction_type"
-                        required>
-                        <option value={""}>Select Transaction Type</option>
-                        <option value={"credit"}>Credit</option>
-                        <option value={"debit"}>Debit</option>
-                      </Input>
+                      >
+                        <option value="none" disabled>Select Transaction Type</option>
+                        <option value="credit">Credit</option>
+                        <option value="debit" > Debit</option>
+                      </Select>
                     </InputGroup>
                     {
-                      state.submitted && !state.transaction_type &&
+                      state.submitted && !state.transaction_type !== 'none' &&
                       <div className="error">Transaction Type is required</div>
                     }
                   </FormGroup>
@@ -282,8 +296,8 @@ const PaymentRequest = (props) => {
                     }
                   </FormGroup> */}
                   <div className="text-center">
-                    <Button disabled={!(state.transaction_mode && state.transaction_type && state.amount && state.wallet_id)} onClick={handleSubmit} className="my-4" color="primary" type="button">
-                      Add Result
+                    <Button disabled={!(state.transaction_type !== 'none' && state.amount && state.wallet_id)} onClick={handleSubmit} className="my-4" color="primary" type="button">
+                      Add Money
                     </Button>
                   </div>
                 </Form>
