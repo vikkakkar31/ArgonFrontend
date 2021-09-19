@@ -32,7 +32,6 @@ import { toastr } from 'react-redux-toastr'
 import {
   Card,
   CardHeader,
-  Table,
   Container,
   Row,
   Button,
@@ -51,6 +50,7 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 import { getTransactionHistory } from "../../redux/actions";
+import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, TableFooter, TablePagination } from "@material-ui/core";
 
 const PaymentRequest = (props) => {
   // console.log(props, "props");
@@ -82,6 +82,17 @@ const PaymentRequest = (props) => {
       createdAt: "",
     },
   });
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   useEffect(() => {
     getUserData({ transaction_type: "credit" });
@@ -174,6 +185,8 @@ const PaymentRequest = (props) => {
       },
     }));
   };
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - userData.length) : 0;
   return (
     <>
       <Header />
@@ -422,7 +435,80 @@ const PaymentRequest = (props) => {
                   </InputGroup>
                 </div>
               </CardHeader>
-              <Table
+              <TableContainer>
+                <Table className="align-items-center table-dark table-flush"
+                  responsive>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell className="text-white">Name</TableCell>
+                      <TableCell className="text-white" align="cenetr">Payment Method</TableCell>
+                      <TableCell  className="text-white" align="cenetr">Amount</TableCell>
+                      <TableCell className="text-white" align="cenetr">Payment Type</TableCell>
+                      <TableCell className="text-white" align="cenetr">Date</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                  {userData && userData.length ?
+                    userData
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((list, index) => {
+                      return (
+                        <TableRow key={index}>
+                          <TableHead scope="row">
+                            <span className="mb-0 text-sm">{list?.wallet_id?.phone_number}</span>
+                          </TableHead>
+                          <TableCell  className="text-white" align="cenetr">{list?.transaction_mode}</TableCell>
+                          <TableCell className="text-white" align="cenetr">{list?.amount}</TableCell>
+                          <TableCell className="text-white" align="cenetr">{list?.transaction_type}</TableCell>
+                          <TableCell className="text-white" align="cenetr">{moment(list?.createdAt).format('MM-DD-YYYY, h:mm a')}</TableCell>
+                          <TableCell>
+                            <React.Fragment>
+                              <button
+                                className={"btn-success"}
+                                onClick={() => onUpdate(list, 'approved')}
+                              >
+                                Approve
+                              </button>
+
+                              <button
+                                className={"btn-secondary"}
+                                style={{ marginLeft: 8 }}
+                                onClick={() => onUpdate(list, 'rejected')}
+                              >
+                                Reject
+                              </button>
+                            </React.Fragment>
+                          </TableCell>
+                        </TableRow>
+                        )
+                      }) : ''
+                    }
+                    {emptyRows > 0 && (
+                        <TableRow
+                          style={{
+                            height: (53) * emptyRows,
+                          }}
+                        >
+                          <TableCell colSpan={6} />
+                        </TableRow>
+                      )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination 
+                      className="text-white"
+                          rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                          colSpan={5}
+                          count={userData.length}
+                          rowsPerPage={rowsPerPage}
+                          page={page}
+                          onPageChange={handleChangePage}
+                          onRowsPerPageChange={handleChangeRowsPerPage} />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
+              {/* <Table
                 className="align-items-center table-dark table-flush"
                 responsive
               >
@@ -471,7 +557,7 @@ const PaymentRequest = (props) => {
                     }) : ''
                   }
                 </tbody>
-              </Table>
+              </Table> */}
             </Card>
           </div>
         </Row>

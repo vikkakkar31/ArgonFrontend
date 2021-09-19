@@ -23,7 +23,6 @@ import { Link, withRouter, useHistory } from "react-router-dom";
 import {
   Card,
   CardHeader,
-  Table,
   Container,
   Row,
   Button,
@@ -42,6 +41,8 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 import { addGame, getGames } from "../../redux/actions";
+import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, TableFooter, TablePagination } from "@material-ui/core";
+import { Tab } from "bootstrap";
 
 const Game = (props) => {
   const { gamesList } = props.games;
@@ -53,6 +54,17 @@ const Game = (props) => {
     end_date: Date.now(),
     submitted: false,
   });
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
   const [filter, setFilter] = useState({
     filterS: {
       status: ''
@@ -141,6 +153,8 @@ const Game = (props) => {
       }));
     }
   };
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - gameData.length) : 0;
 
   return (
     <>
@@ -270,13 +284,64 @@ const Game = (props) => {
                       <option key="active" value="active">Active</option>
                       <option key="inactive" value="inactive">Inactive</option>
                     </Input>
-                  </InputGroup>  
+                  </InputGroup>
                   <InputGroup size="sm" className="w-25 ml-2">
                     <Input type="Button" onClick={() => getGameData({ ...filter.filterS })} className="bg-default text-white" value={"Search"}></Input>
-                  </InputGroup>                
+                  </InputGroup>
                 </div>
               </CardHeader>
-              <Table
+              <TableContainer>
+                <Table className="align-items-center table-dark table-flush"
+                  responsive>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell className="text-white">Game Name</TableCell>
+                      <TableCell className="text-white" align="center">Start Date</TableCell>
+                      <TableCell className="text-white" align="center">End Date</TableCell>
+                      <TableCell className="text-white" align="center"> Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {gameData && gameData.length ?
+                      gameData
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((list, index) => {
+                        return (
+                          <TableRow>
+                            <TableCell className="text-white" >{list.game_name}</TableCell>
+                            <TableCell className="text-white" align="center">{moment(list.start_date).format('MM-DD-YYYY, h:mm a')}</TableCell>
+                            <TableCell className="text-white" align="center">{moment(list.end_date).format('MM-DD-YYYY, h:mm a')}</TableCell>
+                            <TableCell className="text-white" align="center">{list?.status ? (list?.status).toUpperCase() : '-'}</TableCell>
+                          </TableRow>
+                        )
+                      }) : ''
+                    }
+                    {emptyRows > 0 && (
+                      <TableRow
+                        style={{
+                          height: (53) * emptyRows,
+                        }}
+                      >
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination
+                        className="text-white"
+                        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                        colSpan={5}
+                        count={gameData.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage} />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
+              {/* <Table
                 className="align-items-center table-dark table-flush"
                 responsive
               >
@@ -302,7 +367,7 @@ const Game = (props) => {
                     }) : ''
                   }
                 </tbody>
-              </Table>
+              </Table> */}
             </Card>
           </div>
         </Row>

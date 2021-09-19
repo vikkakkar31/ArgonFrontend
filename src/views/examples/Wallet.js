@@ -23,7 +23,6 @@ import { toastr } from 'react-redux-toastr'
 import {
   Card,
   CardHeader,
-  Table,
   Container,
   Row,
   Button,
@@ -42,6 +41,7 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 import { getWallets, addMoneyToWallet } from "../../redux/actions";
+import { TableBody, TableCell, TableRow , TableHead, Table , TableFooter, TableContainer, TablePagination} from "@material-ui/core";
 
 const Wallet = (props) => {
   const { walletsList } = props.wallets;
@@ -58,6 +58,19 @@ const Wallet = (props) => {
     amount: 0,
     submitted: false,
   });
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const [filter, setFilter] = useState({
     filterS: {
       status: '',
@@ -143,6 +156,8 @@ const Wallet = (props) => {
       }));
     }));
   };
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - walletsList.length) : 0;
   return (
     <>
       <Header />
@@ -321,7 +336,58 @@ const Wallet = (props) => {
                   </InputGroup>
                 </div>
               </CardHeader>
-              <Table
+              <TableContainer>
+                <Table className="align-items-center table-dark table-flush"
+                  responsive>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell className="text-white">User Name</TableCell>
+                      <TableCell className="text-white" align="center">Phone Number</TableCell>
+                      <TableCell className="text-white" align="center">Total Amount</TableCell>
+                      <TableCell className="text-white" align="center"> status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                  {walletsList && walletsList.length ?
+                    walletsList
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((list, index) => {
+                      return (
+                        <TableRow key={index}>
+                          <TableCell className="text-white">{list?.user_id?.first_name + list?.user_id?.last_name}</TableCell>
+                          <TableCell className="text-white" align="center">{list?.phone_number}</TableCell>
+                          <TableCell className="text-white" align="center">{list?.total_amount}</TableCell>
+                          <TableCell className="text-white" align="center">{list?.status}</TableCell>
+                        </TableRow>
+                        )
+                      }) : ''
+                    }
+                    {emptyRows > 0 && (
+                        <TableRow
+                          style={{
+                            height: (53) * emptyRows,
+                          }}
+                        >
+                          <TableCell colSpan={6} />
+                        </TableRow>
+                      )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination 
+                      className="text-white"
+                      rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                      colSpan={5}
+                      count={walletsList.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}/>
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
+              {/* <Table
                 className="align-items-center table-dark table-flush"
                 responsive
               >
@@ -347,7 +413,7 @@ const Wallet = (props) => {
                     }) : ''
                   }
                 </tbody>
-              </Table>
+              </Table> */}
             </Card>
           </div>
         </Row>

@@ -16,7 +16,14 @@
 
 */
 import React, { useEffect, useState } from "react";
+import moment from 'moment';
 import { connect, useDispatch } from 'react-redux';
+import TextField from '@material-ui/core/TextField';
+import Select from '@material-ui/core/Select';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { Link, withRouter, useHistory } from "react-router-dom";
 import _ from "lodash";
 
@@ -42,19 +49,23 @@ import {
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
-import { getGames, getGamesBets, getUserList } from "../../redux/actions";
+import { getGames, getGamesBets, getUserList, getWallets } from "../../redux/actions";
 const GameBets = (props) => {
     const { userList } = props;
     const { gameBets, gamesList } = props.games;
+    const { walletsList } = props.wallets;
+    let walletData = walletsList.filter((wallet) => {
+        return wallet?.phone_number
+    })
     const dispatch = useDispatch();
     const [filter, setFilter] = useState({
         filterS: {
             game_id: "",
             user_id: "",
             amount: "",
-            min:"",
-            max:"",
-            createdDate: "",
+            min: "",
+            max: "",
+            createdDate: moment(new Date()).format('YYYY-MM-DD'),
         },
     });
     const [hrows, setHRowsCount] = useState(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]);
@@ -74,9 +85,15 @@ const GameBets = (props) => {
         }));
         dispatch(getUserList((errors, res) => {
         }));
-        getGameBetsData();
+        dispatch(getWallets({}, (errors, res) => {
+            dispatch({ type: 'LOADING_SUCCESS' });
+        }));
+        getGameBetsData({ ...filter.filterS });
     }, []);
-
+    const filterOptions = createFilterOptions({
+        ignoreCase: false,
+        ignoreAccents: false,
+    });
     const getGameBetsData = (query = {}) => {
         dispatch(getGamesBets(query, (errors, res) => {
             var values = {};
@@ -239,7 +256,8 @@ const GameBets = (props) => {
                                             id="game_id"
                                             placeholder="Select Game"
                                             name="game_id"
-                                            required>
+                                            required
+                                            >
                                             <option key={"select"} value={""}>Select Game</option>
                                             {gamesList && gamesList.length ?
                                                 gamesList.map((list, index) => {
@@ -251,6 +269,34 @@ const GameBets = (props) => {
                                         </Input>
                                     </InputGroup>
                                     <InputGroup size="sm" className="w-25 ml-2">
+                                        {/* <Autocomplete
+                                            filterOptions={filterOptions}
+                                            id="wallet_id"
+                                            options={walletData}
+                                            value={filter.filterS.wallet_id}
+                                            onChange={(option, value) => {
+                                                setFilter((prevState) => ({
+                                                    ...prevState,
+                                                    filterS: {
+                                                        ...filter.filterS,
+                                                        wallet_id: value,
+                                                    },
+                                                }));
+                                            }}
+                                            renderOption={(option) => (
+                                                <React.Fragment>
+                                                    <Grid item xs>
+                                                        {option?.user_id?.first_name + option?.user_id?.last_name}
+                                                        <Typography variant="body2" color="textSecondary">
+                                                            {option?.phone_number}
+                                                        </Typography>
+                                                    </Grid>
+                                                </React.Fragment>
+                                            )}
+                                            fullWidth={true}
+                                            getOptionLabel={(option) => option?.phone_number}
+                                            renderInput={(params) => <TextField style={{ color: "white" }} {...params} label="Select Phone Number" variant="outlined" />}
+                                        /> */}
                                         <Input
                                             type="select"
                                             autoComplete="new-name"
@@ -442,6 +488,7 @@ function mapStateToProps(state) {
     return {
         user: state.session.user,
         games: state.games,
+        wallets: state.wallets,
         userList: state.user.userList
     };
 }

@@ -23,7 +23,6 @@ import { Link, withRouter, useHistory } from "react-router-dom";
 import {
   Card,
   CardHeader,
-  Table,
   Container,
   Row,
   UncontrolledDropdown,
@@ -39,11 +38,25 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 import { getTransactionHistory } from "../../redux/actions";
+import { TableBody, TableCell, TableRow, TableContainer, TablePagination, Table, TableHead, TableFooter } from "@material-ui/core";
 
 const TransactionsHistory = (props) => {
   const { transactionHistory } = props.transactionHistory;
   const dispatch = useDispatch();
   const [transactionHistorySet, setTransactionHistory] = useState([]);
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
 
   const [filter, setFilter] = useState({
     filterS: {
@@ -89,6 +102,8 @@ const TransactionsHistory = (props) => {
     card: "Card",
     bets: "Bets",
   };
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - transactionHistory.length) : 0;
   return (
     console.log(filter.filterS, "FILTERS"),
     (
@@ -196,6 +211,9 @@ const TransactionsHistory = (props) => {
                         <option key="bets" value="bets">
                           Bets
                         </option>
+                        <option key="win" value="win">
+                          Win
+                        </option>
                       </Input>
                     </InputGroup>
                     <InputGroup size="sm" className="w-25 ml-2">
@@ -208,7 +226,65 @@ const TransactionsHistory = (props) => {
                     </InputGroup>
                   </div>
                 </CardHeader>
-                <Table
+                <TableContainer>
+                  <Table className="align-items-center "
+                    responsive>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell className="text-white" className="text-white">Phone Number</TableCell>
+                        <TableCell className="text-white" align="center">Payment Method</TableCell>
+                        <TableCell className="text-white" align="center">Amount</TableCell>
+                        <TableCell className="text-white" align="center">Payment Type</TableCell>
+                        <TableCell className="text-white" align="center">Date</TableCell>
+                        <TableCell className="text-white"></TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {transactionHistory && transactionHistory.length
+                        ? transactionHistory
+                          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                          .map((list, index) => {
+                            return (
+                              <TableRow key={index}>
+                                <TableCell className="text-white">{list?.wallet_id?.phone_number}</TableCell>
+                                <TableCell className="text-white" align="center">{list?.transaction_mode}</TableCell>
+                                <TableCell className="text-white" align="center">{list?.amount}</TableCell>
+                                <TableCell className="text-white" align="center">{list?.transaction_type}</TableCell>
+                                <TableCell className="text-white" align="center">
+                                  {moment(list.updatedAt).format(
+                                    "MM-DD-YYYY, h:mm a"
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            )
+                          }) : ''
+                      }
+                      {emptyRows > 0 && (
+                        <TableRow
+                          style={{
+                            height: (53) * emptyRows,
+                          }}
+                        >
+                          <TableCell colSpan={6} />
+                        </TableRow>
+                      )}
+                    </TableBody>
+                    <TableFooter>
+                      <TableRow>
+                        <TablePagination
+                          className="text-white"
+                          rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                          colSpan={5}
+                          count={transactionHistory.length}
+                          rowsPerPage={rowsPerPage}
+                          page={page}
+                          onPageChange={handleChangePage}
+                          onRowsPerPageChange={handleChangeRowsPerPage} />
+                      </TableRow>
+                    </TableFooter>
+                  </Table>
+                </TableContainer>
+                {/* <Table
                   className="align-items-center table-dark table-flush"
                   responsive
                 >
@@ -225,23 +301,23 @@ const TransactionsHistory = (props) => {
                   <tbody>
                     {transactionHistory && transactionHistory.length
                       ? transactionHistory.map((list, index) => {
-                          return (
-                            <tr key={index}>
-                              <td>{list?.wallet_id?.phone_number}</td>
-                              <td>{list?.transaction_mode}</td>
-                              <td>{list?.amount}</td>
-                              <td>{list?.transaction_type}</td>
-                              <td>
-                                {moment(list.updatedAt).format(
-                                  "MM-DD-YYYY, h:mm a"
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })
+                        return (
+                          <tr key={index}>
+                            <td>{list?.wallet_id?.phone_number}</td>
+                            <td>{list?.transaction_mode}</td>
+                            <td>{list?.amount}</td>
+                            <td>{list?.transaction_type}</td>
+                            <td>
+                              {moment(list.updatedAt).format(
+                                "MM-DD-YYYY, h:mm a"
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
                       : ""}
                   </tbody>
-                </Table>
+                </Table> */}
               </Card>
             </div>
           </Row>

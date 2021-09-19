@@ -23,7 +23,6 @@ import { toastr } from 'react-redux-toastr'
 import {
   Card,
   CardHeader,
-  Table,
   Container,
   Row,
   Button,
@@ -39,6 +38,7 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 import { getGameResults, updateGameResults, getGames } from "../../redux/actions";
+import { TableBody, TableCell ,Table, TablePagination,TableRow ,TableContainer,TableHead,TableFooter } from "@material-ui/core";
 
 const GameResults = (props) => {
   console.log(props, "PROPSSSSSS");
@@ -58,6 +58,17 @@ const GameResults = (props) => {
       winning_amount: ""
     }
   });
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   useEffect(() => {
     dispatch({ type: 'LOADING_START' });
@@ -123,6 +134,9 @@ const GameResults = (props) => {
       }));
     }
   };
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - gameResults.length) : 0;
+
   return (
     <>
       <Header />
@@ -191,7 +205,7 @@ const GameResults = (props) => {
                       <div className="error">Winning Bet Number is required</div>
                     }
                   </FormGroup>
-                  <FormGroup>
+                  {/* <FormGroup>
                     <InputGroup className="input-group-alternative">
                       <InputGroupAddon addonType="prepend">
                         <InputGroupText>
@@ -214,9 +228,9 @@ const GameResults = (props) => {
                       state.submitted && !state.winning_amount &&
                       <div className="error">Winning Amount is required</div>
                     }
-                  </FormGroup>
+                  </FormGroup> */}
                   <div className="text-center">
-                    <Button disabled={!(state.game_name && state.winning_bet_number && state.winning_amount)} onClick={handleSubmit} className="my-4" color="primary" type="button">
+                    <Button disabled={!(state.game_name && state.winning_bet_number)} onClick={handleSubmit} className="my-4" color="primary" type="button">
                       Add Result
                     </Button>
                   </div>
@@ -280,7 +294,57 @@ const GameResults = (props) => {
                   </InputGroup>
                 </div>
               </CardHeader>
-              <Table
+              <TableContainer>
+                <Table className="align-items-center table-dark table-flush"
+                  responsive>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell className="text-white">Game Name</TableCell>
+                      <TableCell  className="text-white" align="center">Winning Bet Number</TableCell>
+                      <TableCell className="text-white" align="center">Winning Amount</TableCell>
+                      <TableCell className="text-white" align="center"></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                  {gameResults && gameResults.length ?
+                    gameResults
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((list, index) => {
+                      return (
+                        <TableRow>
+                          <TableCell className="text-white">{list?.game_id?.game_name}</TableCell>
+                          <TableCell className="text-white" align="center">{list?.winning_bet_number}</TableCell>
+                          <TableCell className="text-white" align="center">{list?.winning_amount}</TableCell>
+                        </TableRow>
+                        )
+                      }) : ''
+                    }
+                     {emptyRows > 0 && (
+                      <TableRow
+                        style={{
+                          height: (53) * emptyRows,
+                        }}
+                      >
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination 
+                      className="text-white"
+                      rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                      colSpan={5}
+                      count={gameResults.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}/>
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
+              {/* <Table
                 className="align-items-center table-dark table-flush"
                 responsive
               >
@@ -305,7 +369,7 @@ const GameResults = (props) => {
                     }) : ''
                   }
                 </tbody>
-              </Table>
+              </Table> */}
             </Card>
           </div>
         </Row>

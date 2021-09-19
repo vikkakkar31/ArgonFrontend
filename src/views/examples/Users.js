@@ -24,7 +24,6 @@ import {
   CardHeader,
   Button,
   Input,
-  Table,
   Container,
   Row,
   UncontrolledDropdown,
@@ -37,6 +36,7 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 import { getUserList } from "../../redux/actions";
+import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, TableFooter, TablePagination } from "@material-ui/core";
 
 const Users = (props) => {
   console.log(props, "PROPSSS");
@@ -45,6 +45,17 @@ const Users = (props) => {
   const [filter, setFilter] = useState({
     status: ''
   });
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const [searchText, setSearchText] = useState('');
 
@@ -76,6 +87,9 @@ const Users = (props) => {
     }));
     console.log(filter.status, "STATUSSS");
   };
+
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - userList.length) : 0;
 
   return (
     <>
@@ -113,7 +127,58 @@ const Users = (props) => {
                 </div>
 
               </CardHeader>
-              <Table
+              <TableContainer>
+                <Table className="align-items-center table-dark table-flush"
+                  responsive>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell className="text-white">First name</TableCell>
+                      <TableCell className="text-white" align="center">Last Name</TableCell>
+                      <TableCell className="text-white" align="center">Phone NUmber</TableCell>
+                      <TableCell className="text-white" align="center"> Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {userList && userList.length ?
+                      userList
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((list, index) => {
+                        return (
+                          <TableRow key={index}>
+                            <TableCell className="text-white">{list?.first_name}</TableCell >
+                            <TableCell className="text-white" align="center">{list?.last_name}</TableCell >
+                            <TableCell className="text-white" align="center">{list?.phone_number}</TableCell >
+                            <TableCell className="text-white" align="center">{list?.status}</TableCell >
+                          </TableRow>
+                        )
+                      }) : ''
+                    }
+                    {emptyRows > 0 && (
+                        <TableRow
+                          style={{
+                            height: (53) * emptyRows,
+                          }}
+                        >
+                          <TableCell colSpan={6} />
+                        </TableRow>
+                      )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination 
+                      className="text-white"
+                      rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                      colSpan={5}
+                      count={userList.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage} />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
+              {/* <Table
                 className="align-items-center table-dark table-flush"
                 responsive
               >
@@ -140,7 +205,7 @@ const Users = (props) => {
                     }) : ''
                   }
                 </tbody>
-              </Table>
+              </Table> */}
             </Card>
           </div>
         </Row>

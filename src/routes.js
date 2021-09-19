@@ -86,7 +86,7 @@ var routes = [
   },
   {
     path: "/paymentRequest",
-    name: "Request",
+    name: "Money Request",
     icon: "ni ni-bullet-list-67 text-orange",
     component: PaymentRequest,
     layout: "/admin",
