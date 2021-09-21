@@ -28,7 +28,7 @@ export default function (state = INITIAL_STATE, action) {
         case GET_GAME_RESULTS_SUCCESS:
             return { ...state, gameResults: [...action.data] };
         case UPDATE_GAME_RESULTS_SUCCESS:
-            return { ...state, updateGameResults: [...action.data] };
+            return { ...state, updateGameResults: { ...action.data } };
         case GET_TODAY_RESULT_SUCCESS:
             return { ...state, todayResult: [...action.data] };
         default:
