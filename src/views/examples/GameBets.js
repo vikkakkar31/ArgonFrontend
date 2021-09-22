@@ -257,7 +257,7 @@ const GameBets = (props) => {
                                             placeholder="Select Game"
                                             name="game_id"
                                             required
-                                            >
+                                        >
                                             <option key={"select"} value={""}>Select Game</option>
                                             {gamesList && gamesList.length ?
                                                 gamesList.map((list, index) => {
@@ -268,8 +268,8 @@ const GameBets = (props) => {
                                             }
                                         </Input>
                                     </InputGroup>
-                                    <InputGroup size="sm" className="w-25 ml-2">
-                                        {/* <Autocomplete
+                                    <InputGroup size="sm" className="w-25 ml-2 auto-complete-search">
+                                        <Autocomplete
                                             filterOptions={filterOptions}
                                             id="wallet_id"
                                             options={walletData}
@@ -293,11 +293,11 @@ const GameBets = (props) => {
                                                     </Grid>
                                                 </React.Fragment>
                                             )}
-                                            fullWidth={true}
+                                            // fullWidth={true}
                                             getOptionLabel={(option) => option?.phone_number}
-                                            renderInput={(params) => <TextField style={{ color: "white" }} {...params} label="Select Phone Number" variant="outlined" />}
-                                        /> */}
-                                        <Input
+                                            renderInput={(params) => <TextField style={{ color: "white", fontSize: '10px' }} {...params} label="Select Phone Number" variant="outlined" />}
+                                        />
+                                        {/* <Input
                                             type="select"
                                             autoComplete="new-name"
                                             value={filter.filterS.user_id}
@@ -314,7 +314,7 @@ const GameBets = (props) => {
                                                     )
                                                 }) : ''
                                             }
-                                        </Input>
+                                        </Input> */}
                                     </InputGroup>
                                     <InputGroup size="sm" className="w-25 ml-2">
                                         <Input

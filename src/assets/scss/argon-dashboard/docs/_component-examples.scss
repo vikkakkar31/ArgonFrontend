@@ -591,3 +591,16 @@
 .games-table div.single-row div.l-item {
   padding-right: 8px;
 }
+.auto-complete-search .MuiAutocomplete-root {
+  width: 100%;
+}
+.auto-complete-search .MuiInputBase-formControl {
+  padding: 0 !important;
+}
+#wallet_id {
+  padding: 5px !important;
+}
+#wallet_id-label {
+  font-size: 0.75rem;
+  top: -8px;
+}
