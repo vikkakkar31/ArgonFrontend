@@ -114,24 +114,18 @@ const GameBets = (props) => {
                                 }
                             }
                         })
-                    } else {
-                        values = {}
                     }
                     if (element.inside_bets.length) {
                         element.inside_bets.forEach((bets) => {
                             let targetNUmber = bets.bet_number;
-                            inside_bets[`andar_${targetNUmber}`] = !isNaN(values[targetNUmber]) ? values[targetNUmber] + bets.bet_amount : bets.bet_amount;
+                            inside_bets[`andar_${targetNUmber}`] = !isNaN(inside_bets[targetNUmber]) ? inside_bets[targetNUmber] + bets.bet_amount : bets.bet_amount;
                         })
-                    } else {
-                        inside_bets = {}
                     }
                     if (element.outside_bets.length) {
                         element.outside_bets.forEach((bets) => {
                             let targetNUmber = bets.bet_number;
-                            outside_bets[`bahar_${targetNUmber}`] = !isNaN(values[targetNUmber]) ? values[targetNUmber] + bets.bet_amount : bets.bet_amount;
+                            outside_bets[`bahar_${targetNUmber}`] = !isNaN(outside_bets[targetNUmber]) ? outside_bets[targetNUmber] + bets.bet_amount : bets.bet_amount;
                         })
-                    } else {
-                        outside_bets = {}
                     }
                 });
                 setInputValues(values);
