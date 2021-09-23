@@ -38,7 +38,7 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 import { getGameResults, updateGameResults, getGames } from "../../redux/actions";
-import { TableBody, TableCell ,Table, TablePagination,TableRow ,TableContainer,TableHead,TableFooter } from "@material-ui/core";
+import { TableBody, TableCell, Table, TablePagination, TableRow, TableContainer, TableHead, TableFooter } from "@material-ui/core";
 
 const GameResults = (props) => {
   console.log(props, "PROPSSSSSS");
@@ -123,14 +123,16 @@ const GameResults = (props) => {
       }
     }
     if (reqData) {
+      dispatch({ type: 'LOADING_START' });
       dispatch(updateGameResults(reqData, (res, errors) => {
-        if (res && res.status == 200) {
-          toastr.success('Success', "Game Result Added")
-          setState(prevState => ({
-            ...prevState,
-            submitted: true
-          }));
-        }
+        toastr.success('Success', "Game Result Added")
+        setState({
+          game_name: "",
+          winning_bet_number: "",
+          winning_amount: "",
+          submitted: true,
+        });
+        dispatch({ type: 'LOADING_SUCCESS' });
       }));
     }
   };
@@ -167,6 +169,7 @@ const GameResults = (props) => {
                         placeholder="Select Game"
                         name="game_name"
                         required>
+                        <option key={'no'} value="">Select Game</option>
                         {gamesList && gamesList.length ?
                           gamesList.map((list, index) => {
                             return (
@@ -300,26 +303,26 @@ const GameResults = (props) => {
                   <TableHead>
                     <TableRow>
                       <TableCell className="text-white">Game Name</TableCell>
-                      <TableCell  className="text-white" align="center">Winning Bet Number</TableCell>
+                      <TableCell className="text-white" align="center">Winning Bet Number</TableCell>
                       <TableCell className="text-white" align="center">Winning Amount</TableCell>
                       <TableCell className="text-white" align="center"></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                  {gameResults && gameResults.length ?
-                    gameResults
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((list, index) => {
-                      return (
-                        <TableRow>
-                          <TableCell className="text-white">{list?.game_id?.game_name}</TableCell>
-                          <TableCell className="text-white" align="center">{list?.winning_bet_number}</TableCell>
-                          <TableCell className="text-white" align="center">{list?.winning_amount}</TableCell>
-                        </TableRow>
-                        )
-                      }) : ''
+                    {gameResults && gameResults.length ?
+                      gameResults
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map((list, index) => {
+                          return (
+                            <TableRow>
+                              <TableCell className="text-white">{list?.game_id?.game_name}</TableCell>
+                              <TableCell className="text-white" align="center">{list?.winning_bet_number}</TableCell>
+                              <TableCell className="text-white" align="center">{list?.winning_amount}</TableCell>
+                            </TableRow>
+                          )
+                        }) : ''
                     }
-                     {emptyRows > 0 && (
+                    {emptyRows > 0 && (
                       <TableRow
                         style={{
                           height: (53) * emptyRows,
@@ -331,15 +334,15 @@ const GameResults = (props) => {
                   </TableBody>
                   <TableFooter>
                     <TableRow>
-                      <TablePagination 
-                      className="text-white"
-                      rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                      colSpan={5}
-                      count={gameResults.length}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}/>
+                      <TablePagination
+                        className="text-white"
+                        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                        colSpan={5}
+                        count={gameResults.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage} />
                     </TableRow>
                   </TableFooter>
                 </Table>
