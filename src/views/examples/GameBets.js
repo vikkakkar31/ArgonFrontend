@@ -94,9 +94,6 @@ const GameBets = (props) => {
         ignoreAccents: false,
     });
     const getGameBetsData = (query = {}) => {
-        setHRowsCount([]);
-        setVRowsCount([]);
-        setSingleRowsCount([])
         dispatch(getGamesBets(query, (errors, res) => {
             var values = {};
             var inside_bets = {};
@@ -140,6 +137,9 @@ const GameBets = (props) => {
                 setBaharValues({});
             }
             dispatch({ type: 'LOADING_SUCCESS' });
+            setHRowsCount([]);
+            setVRowsCount([]);
+            setSingleRowsCount([])
             setHRowsCount(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]);
             setVRowsCount(["01", "11", "21", "31", "41", "51", "61", "71", "81", "91"]);
             setSingleRowsCount([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
@@ -210,6 +210,7 @@ const GameBets = (props) => {
         console.log(filter.status, "STATUSSS");
     };
     const handleChange = (e) => {
+        debugger
         const { id, value } = e.target;
         setFilter((prevState) => ({
             ...prevState,
@@ -278,7 +279,7 @@ const GameBets = (props) => {
                                                     ...prevState,
                                                     filterS: {
                                                         ...filter.filterS,
-                                                        wallet_id: value,
+                                                        wallet_id: value._id,
                                                     },
                                                 }));
                                             }}

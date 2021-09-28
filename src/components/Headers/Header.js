@@ -16,6 +16,7 @@
 
 */
 import React, { useEffect, useState } from "react";
+import moment from 'moment';
 import { connect, useDispatch } from 'react-redux';
 import { Link, withRouter, useHistory } from "react-router-dom";
 import { getTodayResult, getWallets, getTransactionHistory, getUserRequest, getGamesBets } from "../../redux/actions";
@@ -147,7 +148,7 @@ const Header = (props) => {
                         >
                           Latest Result
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">{todayResult.length ? todayResult[0]?.winning_bet_number : ''}</span>
+                        <span className="h2 font-weight-bold mb-0">{todayResult.length ? todayResult[0]?.winning_bet_number : '-'}</span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">
@@ -156,7 +157,7 @@ const Header = (props) => {
                       </Col>
                     </Row>
                     <p className="mt-3 mb-0 text-muted text-sm">
-                      <span className="text-nowrap">{todayResult.length ? todayResult[0].created_at : ''}</span>
+                      <span className="text-nowrap">{todayResult.length ? moment(todayResult[0].created_at).format("MM-DD-YYYY, h:mm a") : ''}</span>
                     </p>
                   </CardBody>
                 </Card>
@@ -258,7 +259,7 @@ const Header = (props) => {
                         >
                           Last Budding
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">{todayResult.length ? todayResult[0]?.last_user_bid : ''}</span>
+                        <span className="h2 font-weight-bold mb-0">{todayResult.length ? todayResult[0]?.last_user_bid : '-'}</span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-info text-white rounded-circle shadow">
@@ -267,10 +268,7 @@ const Header = (props) => {
                       </Col>
                     </Row>
                     <p className="mt-3 mb-0 text-muted text-sm">
-                      <span className="text-success mr-2">
-                        <i className="fas fa-arrow-up" /> 12%
-                      </span>{" "}
-                      <span className="text-nowrap">Since last month</span>
+                      <span className="text-nowrap">{todayResult.length ? moment(todayResult[0].created_at).format("MM-DD-YYYY, h:mm a") : ''}</span>
                     </p>
                   </CardBody>
                 </Card>
@@ -295,10 +293,7 @@ const Header = (props) => {
                       </Col>
                     </Row>
                     <p className="mt-3 mb-0 text-muted text-sm">
-                      <span className="text-success mr-2">
-                        <i className="fas fa-arrow-up" /> 12%
-                      </span>{" "}
-                      <span className="text-nowrap">Since last month</span>
+                      <span className="text-nowrap">{todayResult.length ? moment(todayResult[0].created_at).format("MM-DD-YYYY, h:mm a") : '-'}</span>
                     </p>
                   </CardBody>
                 </Card>
