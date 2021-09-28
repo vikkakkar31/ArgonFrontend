@@ -86,7 +86,6 @@ const GameBets = (props) => {
         dispatch(getUserList((errors, res) => {
         }));
         dispatch(getWallets({}, (errors, res) => {
-            dispatch({ type: 'LOADING_SUCCESS' });
         }));
         getGameBetsData({ ...filter.filterS });
     }, []);
@@ -95,6 +94,9 @@ const GameBets = (props) => {
         ignoreAccents: false,
     });
     const getGameBetsData = (query = {}) => {
+        setHRowsCount([]);
+        setVRowsCount([]);
+        setSingleRowsCount([])
         dispatch(getGamesBets(query, (errors, res) => {
             var values = {};
             var inside_bets = {};
@@ -131,13 +133,16 @@ const GameBets = (props) => {
                 setInputValues(values);
                 setAndarValues(inside_bets);
                 setBaharValues(outside_bets);
+
             } else {
                 setInputValues({});
                 setAndarValues({});
                 setBaharValues({});
             }
-
             dispatch({ type: 'LOADING_SUCCESS' });
+            setHRowsCount(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]);
+            setVRowsCount(["01", "11", "21", "31", "41", "51", "61", "71", "81", "91"]);
+            setSingleRowsCount([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
         }));
     }
     console.log(inputValues, andarValues, baharValues, "hi here");

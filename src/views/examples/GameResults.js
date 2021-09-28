@@ -17,6 +17,7 @@
 */
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from 'react-redux';
+import moment from 'moment';
 import { Link, withRouter, useHistory } from "react-router-dom";
 import { toastr } from 'react-redux-toastr'
 // reactstrap components
@@ -282,17 +283,6 @@ const GameResults = (props) => {
                     />
                   </InputGroup>
                   <InputGroup size="sm" className="w-25 ml-2">
-                    <Input
-                      id="winning_amount"
-                      step="1"
-                      type="number"
-                      name="winning_amount"
-                      value={filter.filterS.winning_amount}
-                      onChange={handleFilterChange}
-                      placeholder="Search Winning Amount"
-                    />
-                  </InputGroup>
-                  <InputGroup size="sm" className="w-25 ml-2">
                     <Input type="Button" onClick={() => getGameResultData({ ...filter.filterS })} className="bg-default text-white" value={"Search"}></Input>
                   </InputGroup>
                 </div>
@@ -304,7 +294,7 @@ const GameResults = (props) => {
                     <TableRow>
                       <TableCell className="text-white">Game Name</TableCell>
                       <TableCell className="text-white" align="center">Winning Bet Number</TableCell>
-                      <TableCell className="text-white" align="center">Winning Amount</TableCell>
+                      <TableCell className="text-white" align="center">Result Date</TableCell>
                       <TableCell className="text-white" align="center"></TableCell>
                     </TableRow>
                   </TableHead>
@@ -317,7 +307,7 @@ const GameResults = (props) => {
                             <TableRow>
                               <TableCell className="text-white">{list?.game_id?.game_name}</TableCell>
                               <TableCell className="text-white" align="center">{list?.winning_bet_number}</TableCell>
-                              <TableCell className="text-white" align="center">{list?.winning_amount}</TableCell>
+                              <TableCell className="text-white" align="center">{moment(list?.created_at).format('MM-DD-YYYY, h:mm a')}</TableCell>
                             </TableRow>
                           )
                         }) : ''

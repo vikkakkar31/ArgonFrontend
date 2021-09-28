@@ -43,11 +43,25 @@ const Users = (props) => {
   const { userList } = props;
   const dispatch = useDispatch();
   const [filter, setFilter] = useState({
-    status: ''
+    filterS: {
+      status: '',
+      phone_number: "",
+      searchText: ""
+    }
   });
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
+  const handleFilterChange = (e) => {
+    e.preventDefault();
+    const { id, value } = e.target;
+    setFilter(prevState => ({
+      ...prevState,
+      filterS: {
+        ...filter.filterS,
+        [id]: value,
+      }
+    }));
+  };
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -60,11 +74,15 @@ const Users = (props) => {
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
+    getUserData();
+  }, []);
+
+  const getUserData = (query = {}) => {
     dispatch({ type: 'LOADING_START' });
-    dispatch(getUserList((errors, res) => {
+    dispatch(getUserList(query, (errors, res) => {
       dispatch({ type: 'LOADING_SUCCESS' });
     }));
-  }, []);
+  }
 
   const getSearchUser = (e) => {
     e.preventDefault();
@@ -74,18 +92,6 @@ const Users = (props) => {
     //     return userName.indexOf(e.target.value) > 0;
     // });
     // setSearchedShortListedUser(user);
-  };
-
-  const handleFilterChange = (e) => {
-    e.preventDefault();
-    var filterS = {
-      status: e.currentTarget.getAttribute("dropdownvalue")
-    }
-    setFilter(prevState => ({
-      ...prevState,
-      filter: filterS
-    }));
-    console.log(filter.status, "STATUSSS");
   };
 
   const emptyRows =
@@ -101,31 +107,33 @@ const Users = (props) => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
-                <h3 className="text-white mb-0">Users List</h3>
+                <h3 className="text-white mb-0">Users Details</h3>
                 <div className="d-flex mt-2">
-                  <InputGroup size="sm" className="w-50">
+                  <InputGroup size="sm" className="w-25">
                     <Input
+                      id="searchText"
                       type="text"
-                      name=""
-                      value={searchText || ""}
-                      onChange={getSearchUser}
-                      placeholder="Search....."
+                      name="searchText"
+                      value={filter.filterS.searchText}
+                      onChange={handleFilterChange}
+                      placeholder="Search Name"
                     />
-                    <InputGroupAddon addonType="append">
-                      <Button className="bg-default shadow"><i className="fas fa-search text-white" /></Button>
-                    </InputGroupAddon>
                   </InputGroup>
-                  <UncontrolledDropdown size="sm" className="w-50">
-                    <DropdownToggle caret className="float-right">
-                      {filter.status ? filter.status : "Status"}
-                    </DropdownToggle>
-                    <DropdownMenu right id="status">
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Active">Active</DropdownItem>
-                      <DropdownItem onClick={handleFilterChange} dropDownValue="Inactive">Inactive</DropdownItem>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input
+                      id="phone_number"
+                      step="1"
+                      type="number"
+                      name="phone_number"
+                      value={filter.filterS.phone_number}
+                      onChange={handleFilterChange}
+                      placeholder="Search Phone Number"
+                    />
+                  </InputGroup>
+                  <InputGroup size="sm" className="w-25 ml-2">
+                    <Input type="Button" onClick={() => getUserData({ ...filter.filterS })} className="bg-default text-white" value={"Search"}></Input>
+                  </InputGroup>
                 </div>
-
               </CardHeader>
               <TableContainer>
                 <Table className="align-items-center table-dark table-flush"
@@ -141,39 +149,39 @@ const Users = (props) => {
                   <TableBody>
                     {userList && userList.length ?
                       userList
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((list, index) => {
-                        return (
-                          <TableRow key={index}>
-                            <TableCell className="text-white">{list?.first_name}</TableCell >
-                            <TableCell className="text-white" align="center">{list?.last_name}</TableCell >
-                            <TableCell className="text-white" align="center">{list?.phone_number}</TableCell >
-                            <TableCell className="text-white" align="center">{list?.status}</TableCell >
-                          </TableRow>
-                        )
-                      }) : ''
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map((list, index) => {
+                          return (
+                            <TableRow key={index}>
+                              <TableCell className="text-white">{list?.first_name}</TableCell >
+                              <TableCell className="text-white" align="center">{list?.last_name}</TableCell >
+                              <TableCell className="text-white" align="center">{list?.phone_number}</TableCell >
+                              <TableCell className="text-white" align="center">{list?.status}</TableCell >
+                            </TableRow>
+                          )
+                        }) : ''
                     }
                     {emptyRows > 0 && (
-                        <TableRow
-                          style={{
-                            height: (53) * emptyRows,
-                          }}
-                        >
-                          <TableCell colSpan={6} />
-                        </TableRow>
-                      )}
+                      <TableRow
+                        style={{
+                          height: (53) * emptyRows,
+                        }}
+                      >
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
                   </TableBody>
                   <TableFooter>
                     <TableRow>
-                      <TablePagination 
-                      className="text-white"
-                      rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                      colSpan={5}
-                      count={userList.length}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage} />
+                      <TablePagination
+                        className="text-white"
+                        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                        colSpan={5}
+                        count={userList.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage} />
                     </TableRow>
                   </TableFooter>
                 </Table>
