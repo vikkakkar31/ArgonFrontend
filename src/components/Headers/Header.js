@@ -258,7 +258,7 @@ const Header = (props) => {
                         >
                           Last Budding
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">{lastBid._id ? lastBid.bets.length ? lastBid.bets[0].bet_number : '' : 'No Bid'}</span>
+                        <span className="h2 font-weight-bold mb-0">{todayResult.length ? todayResult[0]?.last_user_bid : ''}</span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-info text-white rounded-circle shadow">
@@ -286,7 +286,7 @@ const Header = (props) => {
                         >
                           Last Winning
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">49,65%</span>
+                        <span className="h2 font-weight-bold mb-0">{todayResult.length ? todayResult[0]?.winning_amount : 0}</span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-info text-white rounded-circle shadow">
